@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>食育融情：SEL情緒探索</title>
+<style>
+  :root{--bg:#FFF9F0;--card:#FFF;--ink:#3D3A36;--soft:#8A8178;--pink:#FF9EB5;--red:#E8737F;--yellow:#FFCC66;--green:#8FCB9B;--blue:#8FB8DE;--purple:#B79CD6;--line:#EFE6DA;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+  #voiceToggle{position:fixed;bottom:18px;right:18px;z-index:80;display:flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.10);}
+  #voiceToggle.on{background:var(--green);border-color:var(--green);color:#fff;}
+  #voiceToggle .dot{width:10px;height:10px;border-radius:50%;background:#CFC7BC;display:inline-block;}
+  #voiceToggle.on .dot{background:#fff;}
+  #home{max-width:820px;margin:0 auto;padding:64px 20px 60px;text-align:center;}
+  .logo{font-size:46px;line-height:1.1;margin:0 0 6px;}
+  .sub{color:var(--soft);margin:0 0 36px;font-size:15px;}
+  .roles{display:grid;gap:18px;grid-template-columns:1fr;max-width:640px;margin:0 auto;}
+  @media(min-width:680px){.roles{grid-template-columns:repeat(2,1fr);}}
+  .role{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:32px 22px;cursor:pointer;transition:.18s;box-shadow:0 4px 16px rgba(0,0,0,.04);}
+  .role .roleimg{display:block;margin:0 auto 14px;width:130px;height:130px;object-fit:contain;}
+  .role .emoji{font-size:56px;display:block;margin-bottom:12px;}
+  .role h3{margin:0 0 6px;font-size:21px;}
+  .role p{margin:0;color:var(--soft);font-size:13.5px;line-height:1.7;}
+  .screen{display:none;padding:16px 16px 110px;max-width:960px;margin:0 auto;}
+  .screen.active{display:block;}
+  .topbar{display:flex;align-items:center;gap:12px;margin:8px 0 20px;flex-wrap:wrap;}
+  .back{background:#fff;border:2px solid var(--line);border-radius:999px;padding:10px 18px;font-size:15px;cursor:pointer;font-weight:600;color:var(--ink);}
+  .panel{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:22px;margin-bottom:18px;}
+  .panel h3{margin:0 0 14px;font-size:17px;}
+  .hint{color:var(--soft);font-size:13.5px;line-height:1.8;}
+  .edge-tip{background:#F1FAF3;border:2px solid var(--green);border-radius:14px;padding:10px 14px;font-size:13px;color:#2F7D46;margin-bottom:16px;display:none;}
+  .btn{background:var(--pink);color:#fff;border:none;border-radius:999px;padding:12px 26px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .btn.blue{background:var(--blue);}
+  .btn.white{background:#fff;color:var(--ink);border:2px solid var(--line);}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  input[type=text]{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-family:inherit;font-size:15px;color:var(--ink);background:#FFFDF9;}
+  .cards{display:grid;gap:14px;grid-template-columns:repeat(2,1fr);}
+  @media(min-width:640px){.cards{grid-template-columns:repeat(3,1fr);}}
+  .qcard{background:#fff;border:2px solid var(--line);border-radius:20px;padding:18px 12px;text-align:center;cursor:pointer;}
+  .qcard .qi{font-size:40px;display:block;margin-bottom:8px;}
+  .qcard span.t{font-size:14px;font-weight:600;line-height:1.5;}
+  .suits{display:grid;gap:14px;grid-template-columns:repeat(2,1fr);}
+  @media(min-width:640px){.suits{grid-template-columns:repeat(4,1fr);}}
+  .suitcard{border-radius:20px;padding:20px 10px;cursor:pointer;color:#fff;font-weight:800;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.10);}
+  .suitcard .si{font-size:40px;display:block;line-height:1;}
+  .suitcard .st{font-size:15px;margin-top:8px;display:block;}
+  .s-hearts{background:#FFE39B;}.s-clubs{background:#B5E6C8;}.s-diamonds{background:#BBD9F2;}.s-spades{background:#FFC9DB;}
+  .s-hearts,.s-clubs,.s-diamonds,.s-spades{color:#2E2A24 !important;}
+  .s-hearts .bt,.s-clubs .bt,.s-diamonds .bt,.s-spades .bt,
+  .s-hearts .be,.s-clubs .be,.s-diamonds .be,.s-spades .be,
+  .s-hearts .si,.s-clubs .si,.s-diamonds .si,.s-spades .si,
+  .s-hearts .st,.s-clubs .st,.s-diamonds .st,.s-spades .st{color:#2E2A24 !important;font-weight:800 !important;}
+  #childSuitGrid .bigbtn{border:none;border-radius:24px;box-shadow:0 4px 12px rgba(0,0,0,.12);padding:18px 10px;}
+  #childFoodGrid .zp,.ingcard .zp,.popupbox .zp,#childSuitGrid .zp{color:#2E2A24 !important;}
+  .suitcard .si,.suitcard .st,.bigbtn .be,.bigbtn .bt{text-shadow:0 1px 0 rgba(255,255,255,.6);}
+  .bigbtn .bt,.suitcard .st{font-weight:900;}
+  .foodrow{display:flex;align-items:center;gap:14px;border:2px solid var(--line);border-radius:16px;padding:12px 16px;margin-bottom:10px;cursor:pointer;background:#fff;}
+  .foodrow .num{font-size:20px;font-weight:800;color:var(--soft);min-width:34px;}
+  .foodrow .fname{font-size:16px;font-weight:700;flex:1;}
+  .foodrow .froman{font-size:13px;color:#8A8178;}
+  .roman{font-size:19px;color:#B5566A;font-weight:700;}
+  .pre{white-space:pre-line;font-size:14.5px;line-height:1.95;color:var(--ink);}
+  .chat{background:#fff;border:2px solid var(--line);border-radius:20px;padding:16px;margin-top:18px;}
+  .msgs{max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+  .msg{padding:10px 14px;border-radius:16px;font-size:14.5px;line-height:1.7;max-width:85%;white-space:pre-wrap;}
+  .msg.bot{background:#F4F1EC;align-self:flex-start;}
+  .msg.me{background:#FFE3EA;align-self:flex-end;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .chip{background:#F4F1EC;border:none;border-radius:999px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink);}
+  #child{background:linear-gradient(180deg,#FFF9F0 0%,#FFF1E2 100%);min-height:100vh;}
+  .bigrow{display:grid;gap:16px;grid-template-columns:repeat(2,1fr);max-width:640px;margin:0 auto;}
+  .bigbtn{border:3px solid #fff;border-radius:28px;padding:22px 12px;text-align:center;cursor:pointer;color:#fff;font-weight:800;box-shadow:0 6px 0 rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .bigbtn .bei{width:100px;height:100px;object-fit:contain;margin-bottom:6px;}
+  .bigbtn .be{font-size:60px;display:block;line-height:1;}
+  .bigbtn .bt{font-size:22px;margin-top:10px;display:block;}
+  .c-happy{background:var(--yellow);}.c-angry{background:var(--red);}.c-sad{background:var(--blue);}
+  .c-surprise{background:var(--purple);}.c-fear{background:#9AA7B5;}.c-disgust{background:var(--green);}
+  .childhead{text-align:center;margin:10px 0 22px;}
+  .childhead h2{margin:0;font-size:26px;line-height:2.4;}
+  .childhead p{color:var(--soft);font-size:14px;margin:6px 0 0;line-height:2.4;}
+  .speakbar{text-align:center;margin-top:22px;}
+  .zy{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin:0 2px;}
+  .zp{writing-mode:vertical-rl;text-orientation:upright;font-size:0.42em;color:#B5566A;font-weight:400;line-height:1;margin-left:1px;}
+  .bigbtn .zp{color:#fff;opacity:.92;}
+  .bigbtn .bt{line-height:2.4;}
+  .popupbox h3{line-height:2.2;}
+  .sec p{line-height:2.4;}
+  .inggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  @media(min-width:520px){.inggrid{grid-template-columns:repeat(4,1fr);}}
+  .ingcard{background:#FFFDF9;border:2px dashed var(--line);border-radius:16px;padding:10px 6px;text-align:center;}
+  .ingph{width:64px;height:64px;border-radius:12px;background:#fff;object-fit:contain;display:block;margin:0 auto 6px;}
+  .ingcard .nm{font-size:14px;font-weight:700;line-height:1.4;}
+  .popup{position:fixed;inset:0;background:rgba(61,58,54,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:50;}
+  .popup.show{display:flex;}
+  .popupbox{background:#fff;border-radius:28px;padding:26px 24px;max-width:600px;width:100%;text-align:left;max-height:88vh;overflow-y:auto;}
+  .popupbox .pei{width:150px;height:150px;object-fit:contain;display:block;margin:0 auto 8px;}
+  .popupbox .pe{font-size:56px;text-align:center;}
+  .popupbox h3{margin:6px 0 14px;font-size:24px;text-align:center;}
+  .sec{margin-bottom:16px;}
+  .sec .lbl{display:inline-block;font-size:13px;font-weight:700;color:#fff;background:var(--pink);border-radius:999px;padding:3px 12px;margin-bottom:8px;}
+  .sec .lbl.blue{background:var(--blue);}
+  .sec .lbl.green{background:var(--green);}
+  .sec p{margin:0;font-size:15px;color:var(--ink);}
+  .sec ol{margin:0;padding-left:20px;font-size:15px;line-height:1.9;}
+  .sec .ex{background:#FFF6F8;border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.8;color:#7A5560;}
+  .sec .lv{font-size:14.5px;line-height:1.9;}
+  .popactions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px;}
+  .popwrap{position:relative;width:100%;max-width:600px;}
+  .xclose{position:absolute;top:-12px;right:-10px;width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:#fff;color:var(--soft);font-size:18px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(0,0,0,.14);z-index:5;display:flex;align-items:center;justify-content:center;line-height:1;}
+  .xclose:hover{background:#FFE3EA;color:var(--ink);}
+  .scorewrap{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);}
+  @media(min-width:700px){.scorewrap{grid-template-columns:repeat(3,1fr);}}
+  .scorecard{background:#FFFDF9;border:3px solid var(--line);border-radius:20px;padding:14px 12px;text-align:center;}
+  .scorecard .sname{width:100%;text-align:center;font-size:16px;font-weight:700;border:none;background:transparent;color:var(--ink);font-family:inherit;border-bottom:2px dashed var(--line);padding:4px;margin-bottom:6px;}
+  .scorecard .sc{font-size:54px;font-weight:800;line-height:1;color:var(--pink);margin:8px 0 12px;}
+  .scorecard .sb{display:flex;gap:8px;justify-content:center;}
+  .scorecard .sb button{border:none;border-radius:14px;font-family:inherit;font-weight:800;cursor:pointer;}
+  .splus{background:var(--green);color:#fff;font-size:22px;padding:12px 22px;}
+  .sminus{background:#E5DED4;color:#6B6259;font-size:18px;padding:12px 16px;}
+  .slead{border-color:var(--yellow);background:#FFFDF3;}
+  .cscorewrap{display:grid;gap:14px;grid-template-columns:repeat(2,1fr);max-width:640px;margin:0 auto;}
+  .cscorecard{background:#fff;border:3px solid #fff;border-radius:24px;padding:16px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.06);}
+  .cscorecard.lead{border-color:var(--yellow);background:#FFFDF3;}
+  .cname{width:100%;text-align:center;font-size:18px;font-weight:800;border:none;background:transparent;color:var(--soft);font-family:inherit;border-bottom:2px dashed var(--line);padding:4px;margin-bottom:6px;}
+  .cnum{font-size:56px;font-weight:800;color:var(--pink);line-height:1.1;margin:6px 0 12px;}
+  .cplus{background:var(--green);color:#fff;border:none;border-radius:18px;font-family:inherit;font-size:22px;font-weight:800;padding:14px 8px;cursor:pointer;flex:1;}
+  .cminus{background:#E5DED4;color:#6B6259;border:none;border-radius:18px;font-family:inherit;font-size:20px;font-weight:800;padding:14px 8px;cursor:pointer;flex:1;}
+  .cscorecard .sb{display:flex;gap:22px;padding:0 8px;}
+  .togglebtn{background:#fff;border:2px solid var(--line);border-radius:999px;padding:7px 18px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;color:var(--soft);margin-top:10px;}
+  /* 注音由程式標注（不用字型） */
+  .cpanel{background:#fff;border:2px solid var(--line);border-radius:24px;padding:20px 16px;margin-bottom:18px;box-shadow:0 4px 14px rgba(0,0,0,.04);}
+  .cpanel .childhead{margin:4px 0 16px;}
+</style>
+</head>
+<body>
+
+<button id="voiceToggle" onclick="toggleVoice()"><span class="dot"></span><span id="voiceLabel">🔇 語音：關</span></button>
+
+<div id="home">
+  <h1 class="logo">🍚 食育融情<br>💛 SEL情緒探索</h1>
+  <p class="sub">食物 × 情緒 × 文化</p>
+  <div class="roles">
+    <div class="role" onclick="go('parent')">
+      <img class="roleimg" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS88KBYDlUClXbUkPwjwGQVF34vXlwSN6iK7NMd2xyCUUaZqIA&s" alt="家長端" referrerpolicy="no-referrer" onerror="this.outerHTML='<span class=&quot;emoji&quot;>👨‍👩‍👧</span>'">
+      <h3>家長端</h3><p>使用說明書<br>玩法規則<br>問答小幫手</p>
+    </div>
+    <div class="role" onclick="go('child')">
+      <img class="roleimg" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhDgkDCMZIyX94Y5xngKSDGoraNNlI7bJCO6sFRccNFxC0DL5cDSuCLceRu8p1iulbf7uxEkhmQIh6IY0tZWkCLPA-5CN_Yx8F_JARMAH48qVClk53vNUc7Qo6qIYGbHd0d8EsHRO4MUSXO/s1600/dance_youchien.png" alt="幼兒端" referrerpolicy="no-referrer" onerror="this.outerHTML='<span class=&quot;emoji&quot;>🧸</span>'"><h3>幼兒端</h3><p>點圖片、聽聲音<br>認識情緒小人<br>不用打字</p>
+    </div>
+  </div>
+  <p class="hint" style="margin-top:34px;">右上角可開啟語音朗讀 🔊</p>
+</div>
+
+<div id="parent" class="screen">
+  <div class="topbar"><button class="back" onclick="go('home')">← 回首頁</button><h2 style="margin:0;font-size:22px;">👨‍👩‍👧 家長端</h2></div>
+  <div class="edge-tip" id="edgeTip">💡 偵測到你在用 Edge，語音會使用台灣腔！</div>
+  <div class="panel"><h3>🍚 食物卡</h3><p class="hint" style="margin-bottom:16px;">點選花色 → 點食物，即可看到「材料」與「做法」。</p><div class="suits" id="suitCards"></div></div>
+  <div class="panel"><h3>🎲 玩法</h3><p class="hint" style="margin-bottom:16px;">點選玩法，查看完整規則<span id="voiceHintText"></span>。</p><div class="cards" id="gameCards"></div></div>
+  <div class="panel"><h3>🃏 翻翻樂計分板</h3><p class="hint" style="margin-bottom:14px;">先選幾個人玩，就會出現對應數量的計分板。</p>
+    <div class="row" id="playerPick">
+      <button class="btn white" onclick="startScore(1)">1 人</button>
+      <button class="btn white" onclick="startScore(2)">2 人</button>
+      <button class="btn white" onclick="startScore(3)">3 人</button>
+      <button class="btn white" onclick="startScore(4)">4 人</button>
+      <input type="number" id="customPlayers" min="1" max="30" value="8" style="width:88px;text-align:center;padding:11px;border:2px solid var(--line);border-radius:999px;font-family:inherit;font-size:15px;">
+      <span style="font-weight:700;color:var(--soft);">人</span>
+      <button class="btn" onclick="startScoreCustom()">自訂人數</button>
+    </div>
+    <div id="scoreBoard" style="margin-top:16px;"></div>
+  </div>
+  <div class="panel"><h3>❓ 常見問題</h3><div class="cards" id="faqCards"></div></div>
+  <div class="panel"><h3>💬 問答小幫手</h3>
+    <div class="chat"><div class="msgs" id="msgs"></div>
+      <div class="chips">
+        <button class="chip" onclick="ask('翻翻樂幾個人可以玩')">翻翻樂幾個人？</button>
+        <button class="chip" onclick="ask('食材卡怎麼玩')">食材卡怎麼玩？</button>
+        <button class="chip" onclick="ask('適合幾歲？')">適合幾歲？</button>
+        <button class="chip" onclick="ask('肉粽怎麼做')">肉粽怎麼做？</button>
+      </div>
+      <div class="row"><input type="text" id="chatInput" placeholder="輸入你的問題…" onkeydown="if(event.key==='Enter')send()"><button class="btn" onclick="send()">送出</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="child" class="screen">
+  <div class="topbar"><button class="back" onclick="go('home')">← 回首頁</button></div>
+  <div class="cpanel">
+    <div class="childhead"><h2 id="childTitle"></h2><p id="childSub"></p></div>
+    <div class="bigrow" id="emotionGrid"></div>
+    <div class="speakbar"><button class="btn blue" id="childAgain" onclick="replay()"></button></div>
+  </div>
+  <div class="cpanel">
+    <div class="childhead"><h2 id="childFoodTitle"></h2></div>
+    <div class="bigrow" id="childSuitGrid" style="max-width:520px;"></div>
+    <div style="text-align:center;margin:14px 0;">
+      <button class="togglebtn" id="foodToggle" onclick="toggleBox('food')">▲ 收起來</button>
+    </div>
+    <div id="foodBody">
+      <div class="bigrow" id="childFoodGrid" style="display:none;"></div>
+    </div>
+  </div>
+  <div class="cpanel">
+    <div class="childhead"><h2 id="childScoreTitle"></h2></div>
+    <div class="row" style="justify-content:center;margin-bottom:16px;">
+      <button class="btn white" onclick="startScore(1)">1 人</button>
+      <button class="btn white" onclick="startScore(2)">2 人</button>
+      <button class="btn white" onclick="startScore(3)">3 人</button>
+      <button class="btn white" onclick="startScore(4)">4 人</button>
+      <input type="number" id="customPlayers2" min="1" max="30" value="8" style="width:88px;text-align:center;padding:11px;border:2px solid var(--line);border-radius:999px;font-family:inherit;font-size:15px;">
+      <span style="font-weight:700;color:var(--soft);">人</span>
+      <button class="btn" onclick="startScoreCustom(true)">自訂人數</button>
+    </div>
+    <div style="text-align:center;margin:0 0 14px;">
+      <button class="togglebtn" id="scoreToggle" onclick="toggleBox('score')">▲ 收起來</button>
+    </div>
+    <div id="scoreBody">
+      <div id="childScoreBoard"></div>
+    </div>
+  </div>
+</div>
+
+<div class="popup" id="popup"><div class="popwrap"><div class="popupbox" id="popupbox"></div><button class="xclose" onclick="closePopup()">✕</button></div></div>
+
+<script>
+/* ===== 語音 ===== */
+let voiceOn=false;
+let lastSpeech='',lastAudio='',curAudio=null;
+function stopAudio(){
+  try{ if(curAudio){curAudio.pause();curAudio.currentTime=0;} }catch(e){}
+  curAudio=null;
+  if('speechSynthesis' in window)speechSynthesis.cancel();
+}
+function toggleVoice(){
+  voiceOn=!voiceOn;
+  document.getElementById('voiceToggle').classList.toggle('on',voiceOn);
+  document.getElementById('voiceLabel').textContent=voiceOn?'🔊 語音：開':'🔇 語音：關';
+  const el=document.getElementById('voiceHintText'); if(el)el.textContent=voiceOn?'，並自動朗讀':'';
+  if(voiceOn)speakPage('語音已開啟。'); else stopAudio();
+}
+function pickVoice(){
+  const vs=speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith('zh'));
+  if(!vs.length)return null;
+  const score=v=>{let s=0,n=(v.name+' '+v.voiceURI).toLowerCase(),l=v.lang.toLowerCase();
+    if(l==='zh-tw'||l==='zh_tw')s+=100;if(/hsiaochen|hsiaoyu|yunjhe|曉臻|曉雨|雲哲/.test(n))s+=300;if(/microsoft/.test(n))s+=60;return s;};
+  return vs.sort((a,b)=>score(b)-score(a))[0];
+}
+function buildUtter(t){const u=new SpeechSynthesisUtterance(t);const v=pickVoice();if(v)u.voice=v;u.lang=v?v.lang:'zh-TW';u.rate=0.92;u.pitch=1.10;return u;}
+function ttsOnly(t){ if(!('speechSynthesis' in window))return; speechSynthesis.cancel(); speechSynthesis.speak(buildUtter(t)); }
+function speak(t){ if(!voiceOn)return; if(!('speechSynthesis' in window))return; stopAudio(); ttsOnly(t); }
+function speakPage(t){
+  if(!('speechSynthesis' in window))return;
+  if(!voiceOn){voiceOn=true;document.getElementById('voiceToggle').classList.add('on');document.getElementById('voiceLabel').textContent='🔊 語音：開';
+    const el=document.getElementById('voiceHintText'); if(el)el.textContent='，並自動朗讀';}
+  stopAudio(); ttsOnly(t);
+}
+function audioPath(key){return AUDIO[key]||('音檔/'+key+'.mp3');}
+function sayFile(key,text){
+  lastSpeech=text; lastAudio=audioPath(key);
+  if(!voiceOn)return;
+  stopAudio();
+  const a=new Audio(lastAudio);
+  curAudio=a;
+  a.onerror=()=>{ if(curAudio===a){ curAudio=null; ttsOnly(text); } };
+  a.play().catch(()=>{});
+}
+function replay(){
+  if(!lastAudio){ speakPage(lastSpeech); return; }
+  if(!voiceOn){voiceOn=true;document.getElementById('voiceToggle').classList.add('on');document.getElementById('voiceLabel').textContent='🔊 語音：開';
+    const el=document.getElementById('voiceHintText'); if(el)el.textContent='，並自動朗讀';}
+  stopAudio();
+  const a=new Audio(lastAudio);
+  curAudio=a;
+  a.onerror=()=>{ if(curAudio===a){ curAudio=null; ttsOnly(lastSpeech); } };
+  a.play().catch(()=>{});
+}
+const AUDIO={"情緒_快樂":"https://s21.aconvert.com/convert/p3r68-cdx67/5vcy9-jbj01.mp3"};
+/* 食物照片：可用外部網址，否則讀 圖片/食物/<食物名>.png */
+const FOODIMG={
+ "hearts-1":"https://lh3.googleusercontent.com/d/1XHcYml5YoN7WNP0b5tcv4UJglXwt_Y2D",
+ "hearts-7":"https://lh3.googleusercontent.com/d/1eGvJMOdT1fRwcNn3CHyP_-QEYepBzT_m",
+ "hearts-2":"https://drive.google.com/thumbnail?id=1Vt9O_NnesoTy5lY19ZOTcm7m5RSgl4dO&sz=w1000",
+ "hearts-3":"https://drive.google.com/thumbnail?id=1XWK0wV1XurmaL7e4wp9qb6YXWXAxeZLE&sz=w1000",
+ "hearts-4":"https://drive.google.com/thumbnail?id=1zUo3eREdB-hWDhPK7R_ZW5t1eCliksno&sz=w1000",
+ "hearts-5":"https://drive.google.com/thumbnail?id=1QDEk9WPM7ulcA-Z2VUMpZrwikV5_6Y4U&sz=w1000",
+ "hearts-6":"https://drive.google.com/thumbnail?id=1JrKA91KmvZy2AdKRsu-_GtGJHA8SpPb7&sz=w1000",
+ "hearts-8":"https://drive.google.com/thumbnail?id=1tnD77_DyfsygLvyf3widKfKVTJkJj89y&sz=w1000",
+ "hearts-9":"https://drive.google.com/thumbnail?id=14UQ55Q2Y0MeejWE2rF0t2zxy3zdfsfzx&sz=w1000",
+ "hearts-10":"https://drive.google.com/thumbnail?id=1ADqih5d_QEqFViwSQ8Ugwj6uvpjUbW_C&sz=w1000",
+ "clubs-1":"https://drive.google.com/thumbnail?id=1B79f3sjn8jfuMXWDhLkbzPMnYZTiq8FJ&sz=w1000",
+ "clubs-2":"https://drive.google.com/thumbnail?id=1MVu9SPDV45KVdcGArA5x78UjyQZj9bmT&sz=w1000",
+ "clubs-3":"https://drive.google.com/thumbnail?id=1WL9nK53pErTRIyyEZKUAtaR1owTbR9uR&sz=w1000",
+ "clubs-4":"https://drive.google.com/thumbnail?id=1-X8XAZtanzJKvHmnMWXWCbUsoZvGgXrK&sz=w1000",
+ "clubs-5":"https://drive.google.com/thumbnail?id=1pVhKYOS3Mrlekd1EQT_6ZvE_Mj1z50dS&sz=w1000",
+ "clubs-6":"https://drive.google.com/thumbnail?id=1sTY1EV7sIgE7F9puRGc6V0zxULTIL3y9&sz=w1000",
+ "clubs-7":"https://drive.google.com/thumbnail?id=1hu5PE-GblmBIIV4Vc8SD-G5RTWGo1CXO&sz=w1000",
+ "clubs-8":"https://drive.google.com/thumbnail?id=1LSAV5CXGctSE7DIShB6IYRcvK-R_bm1_&sz=w1000",
+ "clubs-9":"https://drive.google.com/thumbnail?id=1_WootWWnuSX-Y68lzGnzoutjvFnkudNF&sz=w1000",
+ "clubs-10":"https://drive.google.com/thumbnail?id=1SutENFVWesDHAIc7FvNlJHGGGiF_zdcq&sz=w1000",
+ "diamonds-1":"https://drive.google.com/thumbnail?id=1PWFcVZ05bXkcMo8o_hatZ7s8MXDX3XFq&sz=w1000",
+ "diamonds-2":"https://drive.google.com/thumbnail?id=19X6sQJx0d-wQPd7zX5VSl5TioeKQ8jmk&sz=w1000",
+ "diamonds-3":"https://drive.google.com/thumbnail?id=1lu9f7AxI_tTnWulvlSXWoYaVirTYLGxV&sz=w1000",
+ "diamonds-4":"https://drive.google.com/thumbnail?id=1hmfXWYEpqh5xaLBGztQMqr-WHRkihSrg&sz=w1000",
+ "diamonds-5":"https://drive.google.com/thumbnail?id=1efCUWDFvinS-LVRPtyZkNMt5LKVZN63M&sz=w1000",
+ "diamonds-6":"https://drive.google.com/thumbnail?id=1je3ScsWi8dxqgUxTT5ToOrIt1PpTJ-In&sz=w1000",
+ "diamonds-7":"https://drive.google.com/thumbnail?id=1mjXQoKME13Jz-d3bHZNu5exbJtrTLBXP&sz=w1000",
+ "diamonds-8":"https://drive.google.com/thumbnail?id=1iV-eNAFgRv6Owp9GGEi9MLgEakGV1EZm&sz=w1000",
+ "diamonds-9":"https://drive.google.com/thumbnail?id=1o-gsAtldA-GvnqsdFAfvfduYlBJvf88v&sz=w1000",
+ "diamonds-10":"https://drive.google.com/thumbnail?id=19zvisrEdNNLGBvVzVEOjE1TRz-LC9Zqx&sz=w1000",
+ "spades-1":"https://drive.google.com/thumbnail?id=1mgAQnjqb82lWd8rlW7tP2RvJtMz5qG0j&sz=w1000",
+ "spades-2":"https://drive.google.com/thumbnail?id=1ipZNZk4x8CMVL2j1pEHcrUm0itFHfYui&sz=w1000",
+ "spades-3":"https://drive.google.com/thumbnail?id=1Bt8GP-NCPtuGzk8YjkTz8woCsnRA37mb&sz=w1000",
+ "spades-4":"https://drive.google.com/thumbnail?id=1W3PJ24g36zRwiDpVhRM6KgktZDVbPQiH&sz=w1000",
+ "spades-5":"https://drive.google.com/thumbnail?id=1NxrX7_9KGQLkwIbayzf_N7XtFPGeCrWf&sz=w1000",
+ "spades-6":"https://drive.google.com/thumbnail?id=1OVA5N6L3esjVA51-NUdWiLkxiw4EmpdJ&sz=w1000",
+ "spades-7":"https://drive.google.com/thumbnail?id=1ci9jylaOCNodADmSjxqMWk1J35o3s6f7&sz=w1000",
+ "spades-8":"https://drive.google.com/thumbnail?id=1m3UZ7_xNVGBQJFdnQYjFwGNWmFnnltA2&sz=w1000",
+ "spades-9":"https://drive.google.com/thumbnail?id=1LPs8G9i1q-JXcH_tw07_SdL48c4PtEDg&sz=w1000",
+ "spades-10":"https://drive.google.com/thumbnail?id=1-G4z9t0lZpDWix43LQPvnOJyXxVFkk68&sz=w1000"
+};
+function foodImgPath(key,i){
+  return FOODIMG[key+'-'+(i+1)] || ('圖片/食物/'+FOODS[key].items[i].food.replace(/[（(].*$/,'')+'.png');
+}
+
+/* ===== 注音 ===== */
+const ZHUYIN={"你":"ㄋㄧˇ","今":"ㄐㄧㄣ","天":"ㄊㄧㄢ","的":"ㄉㄜ˙","心":"ㄒㄧㄣ","情":"ㄑㄧㄥˊ","是":"ㄕˋ","什":"ㄕㄣˊ","麼":"ㄇㄜ˙","呢":"ㄋㄜ˙","點":"ㄉㄧㄢˇ","一":"ㄧ","聽":"ㄊㄧㄥ","快":"ㄎㄨㄞˋ","樂":"ㄌㄜˋ","憤":"ㄈㄣˋ","怒":"ㄋㄨˋ","悲":"ㄅㄟ","傷":"ㄕㄤ","驚":"ㄐㄧㄥ","訝":"ㄧㄚˋ","恐":"ㄎㄨㄥˇ","懼":"ㄐㄩˋ","厭":"ㄧㄢˋ","惡":"ㄨˋ","吃":"ㄔ","到":"ㄉㄠˋ","好":"ㄏㄠˇ","肉":"ㄖㄡˋ","粽":"ㄗㄨㄥˋ","我":"ㄨㄛˇ","會":"ㄏㄨㄟˋ","笑":"ㄒㄧㄠˋ","咪":"ㄇㄧ","事":"ㄕˋ","讓":"ㄖㄤˋ","覺":"ㄐㄩㄝˊ","得":"ㄉㄜˊ","玩":"ㄨㄢˊ","具":"ㄐㄩˋ","被":"ㄅㄟˋ","搶":"ㄑㄧㄤˇ","走":"ㄗㄡˇ","生":"ㄕㄥ","氣":"ㄑㄧˋ","時":"ㄕˊ","候":"ㄏㄡˋ","做":"ㄗㄨㄛˋ","想":"ㄒㄧㄤˇ","媽":"ㄇㄚ","難":"ㄋㄢˊ","過":"ㄍㄨㄛˋ","誰":"ㄕㄟˊ","抱":"ㄅㄠˋ","哇":"ㄨㄚ","原":"ㄩㄢˊ","來":"ㄌㄞˊ","臭":"ㄔㄡˋ","豆":"ㄉㄡˋ","腐":"ㄈㄨˇ","這":"ㄓㄜˋ","個":"ㄍㄜˋ","味":"ㄨㄟˋ","道":"ㄉㄠˋ","有":"ㄧㄡˇ","嚇":"ㄒㄧㄚˋ","跳":"ㄊㄧㄠˋ","嗎":"ㄇㄚ˙","黑":"ㄏㄟ","地":"ㄉㄧˋ","方":"ㄈㄤ","怕":"ㄆㄚˋ","可":"ㄎㄜˇ","以":"ㄧˇ","找":"ㄓㄠˇ","陪":"ㄆㄟˊ","苦":"ㄎㄨˇ","菜":"ㄘㄞˋ","皺":"ㄓㄡˋ","眉":"ㄇㄟˊ","頭":"ㄊㄡˊ","沒":"ㄇㄟˊ","不":"ㄅㄨˋ","喜":"ㄒㄧˇ","歡":"ㄏㄨㄢ","東":"ㄉㄨㄥ","西":"ㄒㄧ","再":"ㄗㄞˋ","次":"ㄘˋ","懂":"ㄉㄨㄥˇ","了":"ㄌㄜ˙",
+"食":"ㄕˊ","物":"ㄨˋ","分":"ㄈㄣ","最":"ㄗㄨㄟˋ","多":"ㄉㄨㄛ","人":"ㄖㄣˊ","自":"ㄗˋ","訂":"ㄉㄧㄥˋ","數":"ㄕㄨˋ","收":"ㄕㄡ","起":"ㄑㄧˇ","打":"ㄉㄚˇ","開":"ㄎㄞ",
+"刈":"ㄧˋ","包":"ㄅㄠ","腸":"ㄔㄤˊ","麵":"ㄇㄧㄢˋ","線":"ㄒㄧㄢˋ","粿":"ㄍㄨㄛˇ","潤":"ㄖㄨㄣˋ","餅":"ㄅㄧㄥˇ",
+"佛":"ㄈㄛˊ","牆":"ㄑㄧㄤˊ","滷":"ㄌㄨˇ","飯":"ㄈㄢˋ","虱":"ㄕ","目":"ㄇㄨˋ","魚":"ㄩˊ","湯":"ㄊㄤ","封":"ㄈㄥ",
+"米":"ㄇㄧˇ","苔":"ㄊㄞˊ","糍":"ㄘˊ","粑":"ㄅㄚ","九":"ㄐㄧㄡˇ","層":"ㄘㄥˊ","粄":"ㄅㄢˇ","客":"ㄎㄜˋ","家":"ㄐㄧㄚ",
+"鹹":"ㄒㄧㄢˊ","炒":"ㄔㄠˇ","擂":"ㄌㄟˊ","茶":"ㄔㄚˊ","薑":"ㄐㄧㄤ","絲":"ㄙ","酸":"ㄙㄨㄢ","片":"ㄆㄧㄢˋ",
+"牛":"ㄋㄧㄡˊ","汶":"ㄨㄣˋ","水":"ㄕㄨㄟˇ","越":"ㄩㄝˋ","法":"ㄈㄚˇ","國":"ㄍㄨㄛˊ","河":"ㄏㄜˊ","粉":"ㄈㄣˇ",
+"印":"ㄧㄣˋ","尼":"ㄋㄧˊ","春":"ㄔㄨㄣ","捲":"ㄐㄩㄢˇ","涼":"ㄌㄧㄤˊ","拌":"ㄅㄢˋ","青":"ㄑㄧㄥ","木":"ㄇㄨˋ","瓜":"ㄍㄨㄚ",
+"炸":"ㄓㄚˊ","香":"ㄒㄧㄤ","蕉":"ㄐㄧㄠ","巴":"ㄅㄚ","東":"ㄉㄨㄥ","式":"ㄕˋ","烤":"ㄎㄠˇ","豬":"ㄓㄨ","排":"ㄆㄞˊ",
+"黃":"ㄏㄨㄤˊ","生":"ㄕㄥ","醃":"ㄧㄢ","搖":"ㄧㄠˊ","小":"ㄒㄧㄠˇ","族":"ㄗㄨˊ","綜":"ㄗㄨㄥˋ","合":"ㄏㄜˊ","野":"ㄧㄝˇ",
+"烘":"ㄏㄨㄥ","芋":"ㄩˋ","乾":"ㄍㄢ","魯":"ㄌㄨˇ","凱":"ㄎㄞˇ","樹":"ㄕㄨˋ","豆":"ㄉㄡˋ","骨":"ㄍㄨˇ","布":"ㄅㄨˋ","農":"ㄋㄨㄥˊ",
+"飛":"ㄈㄟ","達":"ㄉㄚˊ","悟":"ㄨˋ","鹽":"ㄧㄢˊ","浪":"ㄌㄤˋ","花":"ㄏㄨㄚ","蟹":"ㄒㄧㄝˋ","噶":"ㄍㄚˊ","瑪":"ㄇㄚˇ",
+"蘭":"ㄌㄢˊ","糕":"ㄍㄠ","美":"ㄇㄟˇ","卑":"ㄅㄟ","南":"ㄋㄢˊ","灣":"ㄨㄢ",
+"菇":"ㄍㄨ","蝦":"ㄒㄧㄚ","栗":"ㄌㄧˋ","子":"ㄗˇ","蛋":"ㄉㄢˋ","竹":"ㄓㄨˊ","葉":"ㄧㄝˋ","麻":"ㄇㄚˊ","繩":"ㄕㄥˊ",
+"紅":"ㄏㄨㄥˊ","蔥":"ㄘㄨㄥ","醬":"ㄐㄧㄤˋ","油":"ㄧㄡˊ","膏":"ㄍㄠ","酒":"ㄐㄧㄡˇ","冰":"ㄅㄧㄥ","糖":"ㄊㄤˊ",
+"五":"ㄨˇ","白":"ㄅㄞˊ","胡":"ㄏㄨˊ","椒":"ㄐㄧㄠ","皮":"ㄆㄧˊ","蒜":"ㄙㄨㄢˋ","辣":"ㄌㄚˋ","砂":"ㄕㄚ",
+"泡":"ㄆㄠˋ","泥":"ㄋㄧˊ","大":"ㄉㄚˋ","柴":"ㄔㄞˊ","太":"ㄊㄞˋ","糯":"ㄋㄨㄛˋ","干":"ㄍㄢ","麗":"ㄌㄧˋ",
+"芽":"ㄧㄚˊ","蘿":"ㄌㄨㄛˊ","蔔":"ㄅㄛ˙","貝":"ㄅㄟˋ","鳥":"ㄋㄧㄠˇ","扁":"ㄅㄧㄢˇ","金":"ㄐㄧㄣ","鉤":"ㄍㄡ",
+"雞":"ㄐㄧ","腳":"ㄐㄧㄠˇ","絞":"ㄐㄧㄠˇ","角":"ㄐㄧㄠˇ","芹":"ㄑㄧㄣˊ","在":"ㄗㄞˋ","韭":"ㄐㄧㄡˇ","燥":"ㄗㄠˋ",
+"酥":"ㄙㄨ","芝":"ㄓ","二":"ㄦˋ","魷":"ㄧㄡˊ","燕":"ㄧㄢˋ","麥":"ㄇㄞˋ","葵":"ㄎㄨㄟˊ","熱":"ㄖㄜˋ","醋":"ㄘㄨˋ",
+"汁":"ㄓ","肝":"ㄍㄢ","腿":"ㄊㄨㄟˇ","露":"ㄌㄨˋ","洋":"ㄧㄤˊ","檸":"ㄋㄧㄥˊ","檬":"ㄇㄥˊ","塔":"ㄊㄚˇ","荷":"ㄏㄜˊ",
+"參":"ㄙㄢ","嗲":"ㄉㄧㄚˇ","海":"ㄏㄞˇ","鮮":"ㄒㄧㄢ","紙":"ㄓˇ","椰":"ㄧㄝˊ","茄":"ㄑㄧㄝˊ","低":"ㄉㄧ","筋":"ㄐㄧㄣ",
+"肋":"ㄌㄜˋ","老":"ㄌㄠˇ","茅":"ㄇㄠˊ","桂":"ㄍㄨㄟˋ","漿":"ㄐㄧㄤ","蜜":"ㄇㄧˋ","泰":"ㄊㄞˋ","茉":"ㄇㄛˋ","莉":"ㄌㄧˋ",
+"長":"ㄔㄤˊ","月":"ㄩㄝˋ","奶":"ㄋㄞˇ","粗":"ㄘㄨ","藜":"ㄌㄧˊ","龍":"ㄌㄨㄥˊ","莧":"ㄒㄧㄢˋ","山":"ㄕㄢ","茼":"ㄊㄨㄥˊ","蒿":"ㄏㄠ",
+"乳":"ㄖㄨˇ","假":"ㄐㄧㄚˇ","鱉":"ㄅㄧㄝ","瓣":"ㄅㄢˋ","萵":"ㄨㄛ","苣":"ㄐㄩˋ","藤":"ㄊㄥˊ","過":"ㄍㄨㄛˋ","貓":"ㄇㄠ","嶼":"ㄩˇ",
+"愛":"ㄞˋ","閩":"ㄇㄧㄣˊ","梅":"ㄇㄟˊ","菱":"ㄌㄧㄥˊ","形":"ㄒㄧㄥˊ","新":"ㄒㄧㄣ","住":"ㄓㄨˋ","民":"ㄇㄧㄣˊ","桃":"ㄊㄠˊ","阿":"ㄚ","粨":"ㄅㄞˇ"};
+function ruby(text){let out='';for(const ch of text){if(ZHUYIN[ch])out+='<span class="zy"><span>'+ch+'</span><span class="zp">'+ZHUYIN[ch]+'</span></span>';else out+=ch;}return out;}
+
+/* ===== 食物資料 ===== */
+const FOODS={
+ hearts:{name:"愛心（閩南）",icon:"♥",cls:"s-hearts",items:[
+  {n:1,food:"肉粽",roman:"bah-tsàng",ing:`糯米、花生、香菇、蝦米、栗子、鹹蛋黃、豬肉、竹葉、棉繩`,
+   how:`1. 竹葉洗淨燙 5 分鐘撈出瀝乾，棉繩剪好備用
+2. 糯米和花生洗淨，泡水至少 4 小時後瀝乾
+3. 香菇與蝦米洗淨泡軟，香菇去蒂切塊
+4. 栗子泡水去皮，與鹹蛋黃一起噴米酒，蒸熟備用
+5. 起油鍋，下香菇和蝦米爆香後撈出
+6. 豬肉塊炒至變色，加醬油、五香粉、糖和水滷至軟爛，撈出肉塊
+7. 糯米與花生倒入滷汁，小火翻炒至吸收湯汁、呈半熟後熄火
+8. 取兩片竹葉平鋪，折成漏斗狀
+9. 先放一匙糯米花生鋪底
+10. 中間放豬肉、香菇、鹹蛋黃、栗子和蝦米
+11. 再覆蓋一層糯米填滿，折出三角形
+12. 用棉繩綁緊（不可太鬆）
+13. 水煮滾轉小火，放入粽子煮至熟透（約 1.5–2.5 小時）`},
+  {n:2,food:"刈包",roman:"kuàh-pau",ing:`刈包麵皮、五花肉、酸菜、花生粉、香菜`,
+   how:`1. 五花肉切塊汆燙後，與冰糖、蒜頭、薑、蔥、八角、米酒、醬油及水，小火慢燉至軟嫩
+2. 酸菜切細絲洗淨擠乾，入熱鍋不加油炒乾水氣，再加糖與蒜頭炒香撈出
+3. 香菜洗淨切碎
+4. 刈包麵皮蒸熱後取出
+5. 從中間翻開，內側撒一層花生粉
+6. 疊上炒酸菜，再鋪上滷五花肉
+7. 撒上香菜與花生粉，對折闔上`},
+  {n:3,food:"臭豆腐",roman:"tshàu-tāu-hū",ing:`生臭豆腐、泡菜、香菜、食用油、蒜泥、醬油膏`,
+   how:`1. 清洗生臭豆腐，切成小塊方形
+2. 調製蒜泥醬汁
+3. 香菜洗淨切小段
+4. 台式泡菜瀝乾備用
+5. 鍋中倒足量食用油，大火加熱
+6. 臭豆腐逐塊滑入，中火油炸至表面淡黃、內部熟透，撈起瀝油
+7. 拉高油溫，再次複炸至金黃酥脆，撈起瀝乾
+8. 排盤加入泡菜及香菜，淋上蒜泥醬油膏`},
+  {n:4,food:"大腸麵線",roman:"tōa-tn̂g mī-suànn",ing:`麵線、豬大腸、香菜、蒜泥、柴魚高湯、太白粉水`,
+   how:`1. 大腸洗淨，去腥滷煮至軟嫩，撈出切小段
+2. 麵線洗淨浸泡 5 分鐘，剪成小段
+3. 香菜洗淨切末
+4. 大蒜搗成蒜泥
+5. 大火將高湯煮滾
+6. 加入麵線，轉小火燉煮
+7. 加入滷好的豬大腸一起熬煮
+8. 太白粉加水調成勾芡水
+9. 轉大火，勾芡水緩緩淋入並快速攪拌至濃稠
+10. 盛碗淋上蒜泥
+11. 點綴香菜`},
+  {n:5,food:"白糖粿",roman:"pe̍h-thn̂g-kóe",ing:`糯米粉、白砂糖、水、食用油、花生糖粉`,
+   how:`1. 糯米粉＋白砂糖＋水搓揉到光滑
+2. 分成一小顆一小顆
+3. 搓成長條扁扁的
+4. 把麵團扭結
+5. 下油鍋（中小火）炸
+6. 要翻面，炸到金黃色
+7. 起鍋
+8. 稍微放涼，沾花生糖粉`},
+  {n:6,food:"潤餅",roman:"lūn-piánn",ing:`潤餅皮、豬肉絲、豆干、蛋皮、高麗菜、豆芽菜、紅蘿蔔、花生粉、香菜`,
+   how:`1. 高麗菜絲、紅蘿蔔絲與豆芽菜分別下鍋炒熟，炒乾或瀝乾水分
+2. 雞蛋煎成蛋皮
+3. 將高麗菜、紅蘿蔔、蛋皮、豆干、豬肉切成絲
+4. 潤餅皮攤開鋪在盤上，放入配菜
+5. 撒上花生粉及香菜
+6. 上下左右向中間折，包住所有食材`},
+  {n:7,food:"佛跳牆",roman:"thiàu-tshiûnn",ing:`大白菜、魚皮、干貝、豬皮、排骨、鳥蛋、扁魚、金鉤蝦米、乾香菇、大骨湯、雞腳`,
+   how:`1. 豬骨、雞腳、豬皮、魚皮冷水煮滾，汆燙後撈出洗淨
+2. 另一鍋放入豬骨、雞腳與豬皮，煮成濃白湯，魚皮先撈出
+3. 香菇與干貝泡軟，香菇去蒂切塊
+4. 排骨與雞翅醃過裹地瓜粉，炸至金黃
+5. 鳥蛋炸至虎皮狀
+6. 扁魚炸酥壓碎，與蝦米、香菇炒香
+7. 大白菜切塊炒軟
+8. 深鍋底層鋪大白菜
+9. 第二層放炸排骨、雞翅、豬皮
+10. 第三層放扁魚碎、蝦米、香菇、鳥蛋
+11. 最上層擺干貝與魚皮
+12. 倒入白湯淹過食材，加鹽與米酒
+13. 蓋鍋放入電鍋蒸至軟嫩`},
+  {n:8,food:"滷肉飯",roman:"lóo-bah-pn̄g",ing:`豬絞肉、紅蔥頭、蒜頭、白飯、冰糖、醬油、米酒、白胡椒粉`,
+   how:`1. 紅蔥頭與蒜頭切碎
+2. 鍋中加油，紅蔥頭小火炸至金黃酥脆後撈出
+3. 利用餘油爆香蒜末
+4. 加入豬絞肉大火翻炒至變白、逼出油脂
+5. 倒入冰糖翻炒上糖色
+6. 沿鍋邊淋入醬油與米酒炒香
+7. 撒白胡椒粉，倒回紅蔥酥拌勻
+8. 加清水沒過肉燥，煮滾後轉小火燉至濃稠
+9. 淋在白飯上，灑白胡椒`},
+  {n:9,food:"虱目魚湯",roman:"sat-ba̍k-hî-thng",ing:`虱目魚、薑絲、蔥、芹菜、水、米酒、鹽、白胡椒粉`,
+   how:`1. 虱目魚洗淨切塊，蔥與芹菜切細末
+2. 鍋中倒水，放一半薑絲，大火煮滾
+3. 放入魚塊，轉中小火（避免魚肉散掉）
+4. 倒入米酒，撈去浮沫
+5. 煮熟後加鹽調味
+6. 起鍋前撒上薑絲、蔥花、芹菜珠與白胡椒`},
+  {n:10,food:"封肉",roman:"hong-bah",ing:`五花肉、蒜頭、薑、蔥、八角、冰糖、米酒、醬油、水`,
+   how:`1. 五花肉切大塊，冷水煮滾汆燙去血水，撈出洗淨瀝乾
+2. 熱鍋不加油，煎五花肉至各面微金黃，逼出油脂後撈出
+3. 用鍋內豬油，小火加冰糖熬成琥珀糖色
+4. 五花肉倒回，快速翻炒裹上糖色
+5. 放入蒜頭、薑片、蔥段、八角炒香
+6. 沿鍋邊淋米酒與醬油炒香
+7. 倒清水淹過肉塊，煮滾後撈去浮沫
+8. 蓋鍋轉小火慢燉，至筷子可輕易戳透
+9. 開蓋轉中大火收汁至濃稠油亮`}
+ ]},
+ clubs:{name:"梅花（客家）",icon:"♣",cls:"s-clubs",items:[
+  {n:1,food:"米苔目",roman:"miˋ qiˊ mugˋ",ing:`在來米粉、水、地瓜粉、韭菜、豆芽菜、肉燥、油蔥酥、高湯`,
+   how:`1. 在來米粉均分兩份（50g＋50g）
+2. 在來米粉 50g 加水 160g 拌勻，中火加熱至糊化後關火
+3. 加入剩餘在來米粉和地瓜粉 50g 快速攪拌，太濃可加冷水
+4. 麵糊裝入擠花袋
+5. 煮一鍋沸水，將麵糊擠進滾水中
+6. 煮熟浮起即可撈起
+7. 另盛一盆水備用
+8. 高湯煮滾後加米苔目、韭菜、豆芽菜，盛碗加肉燥及油蔥酥`},
+  {n:2,food:"糍粑",roman:"ci baˋ",ing:`糯米、水、花生粉、黑芝麻粉、砂糖`,
+   how:`1. 糯米洗淨浸泡至飽和，瀝乾後蒸熟
+2. 趁熱放入抹薄油的容器，用木棒擣打至糊化、有拉絲感
+3. 花生粉、芝麻粉與砂糖混合成糖粉
+4. 雙手沾熟油，把糍粑捏成圓球
+5. 裹上厚厚花生芝麻糖粉`},
+  {n:3,food:"九層粄",roman:"giuˋ cenˇ banˋ",ing:`在來米粉、地瓜粉、糯米粉、水、黑糖、二砂糖`,
+   how:`1. 三種粉與水拌勻，過濾後平分成兩鍋
+2. 一鍋加黑糖成為黑糖粉漿
+3. 另一鍋加二砂糖成為二砂粉漿
+4. 蒸鍋水燒開，蒸模抹薄油預熱
+5. 舀一層黑糖粉漿，大火蒸至凝固變透明
+6. 再舀一層二砂粉漿，蒸至凝固
+7. 重複交替，直到堆疊出九層
+8. 最後一層用中大火蒸至完全熟透
+9. 放涼至完全冷卻後，用抹油刀切塊`},
+  {n:4,food:"客家鹹豬肉",roman:"hagˋ gaˊ hamˇ zuˊ ngiugˋ",ing:`五花肉、蒜頭、黑胡椒、鹽、米酒`,
+   how:`1. 五花肉洗淨擦乾，切成長條大塊
+2. 蒜頭切細末，與鹽、黑胡椒混合成醃料
+3. 米酒均勻塗抹五花肉每一面
+4. 醃料抹上並反覆搓揉按摩
+5. 放入密封袋冷藏醃 2～3 天
+6. 取出後刮除多餘蒜碎
+7. 烤箱或平底鍋中小火煎烤至兩面金黃
+8. 放涼後切薄片`},
+  {n:5,food:"粄條",roman:"banˋ tiauˇ",ing:`在來米粉、太白粉、水、韭菜、豆芽菜、肉燥、油蔥酥`,
+   how:`1. 水中加鹽攪勻
+2. 在來米粉、太白粉分次加入水中攪勻無粉粒
+3. 模具刷一層沙拉油
+4. 粉漿舀入模具搖勻，水滾後大火蒸
+5. 取出趁熱刷油，沿四邊劃過方便取出
+6. 韭菜切段，豆芽菜洗淨
+7. 高湯煮滾，汆燙粄條、韭菜與豆芽菜後撈出
+8. 淋上肉燥與油蔥酥`},
+  {n:6,food:"客家炒肉",roman:"hagˋ gaˊ cauˋ ngiugˋ",ing:`豬肉、魷魚乾、豆干、芹菜、蒜頭、醬油`,
+   how:`1. 乾魷魚剪成小條，泡水至軟
+2. 五花肉和豆乾切小條
+3. 五花肉乾煎逼出油脂
+4. 放入豆乾炒到邊緣焦黃
+5. 放入魷魚炒香
+6. 放入蒜頭爆香
+7. 加醬油調味翻炒均勻
+8. 加芹菜翻炒至軟即完成`},
+  {n:7,food:"擂茶",roman:"luiˇ caˇ",ing:`茶葉、燕麥、花生、芝麻、南瓜子、葵瓜子、糖、熱開水`,
+   how:`1. 花生、芝麻、南瓜子、葵瓜子小火慢炒至微黃有香味
+2. 茶葉磨成細粉
+3. 加入燕麥片、南瓜子、葵瓜子一起研磨
+4. 最後加花生（去皮）、芝麻、糖，稍微磨碎拌勻（勿磨太久）
+5. 熱水溫杯，注入 200cc 熱開水
+6. 倒入擂茶粉約 30g，攪拌均勻`},
+  {n:8,food:"大腸炒薑絲",roman:"giongˊ xiˊ cauˋ zuˊ congˇ",ing:`豬大腸、薑絲、白醋、蔥、蒜頭、糖、水`,
+   how:`1. 大腸翻洗拔油洗淨，水煮到軟爛，撈起切圈
+2. 薑切絲、蒜切末
+3. 熱鍋下油，先炒薑絲，再下蒜末爆香
+4. 放入大腸快炒
+5. 轉中火加水 2 大匙，加糖
+6. 翻炒均勻讓大腸吸收調味
+7. 加蔥，沿鍋邊淋白醋
+8. 快火翻炒 3～5 秒，立刻出鍋`},
+  {n:9,food:"客家酸菜肉片湯",roman:"hamˇ coiˋ ngiug pien tongˋ",ing:`客家酸菜、豬肉片、薑絲、蔥、高湯、鹽`,
+   how:`1. 嫩薑切絲
+2. 酸菜切絲
+3. 油鍋爆香薑絲
+4. 加入酸菜爆香
+5. 加入豬肉片拌炒至約 8 分熟
+6. 加高湯大火煮滾，轉中小火煮到酸菜微透明金黃即可關火`},
+  {n:10,food:"牛汶水",roman:"ngiuˇ vun suiˋ",ing:`糯米粉、水、黑糖、薑汁、花生粉、芝麻`,
+   how:`1. 黑糖 50g、薑汁 105g 入鍋煮滾，轉小火煮到黑糖化開
+2. 糯米粉 135g 和水 95g 混合揉成團
+3. 取 1/10 糯米糰捏成圓餅，放入滾水煮至浮起
+4. 與原糯米糰揉勻，分成 12 份，揉圓壓扁、中間按出凹洞
+5. 煮一鍋滾水，將麻糬煮至浮起
+6. 放入黑糖薑汁中，灑上芝麻粉和花生碎`}
+ ]},
+ diamonds:{name:"菱形（新住民）",icon:"♦",cls:"s-diamonds",items:[
+  {n:1,food:"越南法國麵包",roman:"Bánh mì",ing:`法國麵包 1 個
+豬肝醬、豬肉、越南火腿、醃蘿蔔、香菜、生菜、魚露`,
+   how:`1. 取一個法國麵包。
+2. 將豬肝醬、豬肉、越南火腿、醃蘿蔔、香菜、生菜、魚露放進麵包中即可。`},
+  {n:2,food:"越南河粉",roman:"Phở",ing:`牛肉、洋蔥、大蒜、糖、鹽、河粉、檸檬汁、豆芽菜、九層塔、薄荷、水`,
+   how:`1. 牛肉放入冷水煮滾，去除血水雜質，再用清水洗淨。
+2. 洋蔥、大蒜放入平底鍋煎到焦香。
+3. 大鍋加牛肉、辛香料與水，煮滾後撈除浮沫，轉小火燉數小時。
+4. 取出牛肉，湯中加冰糖與鹽調味。
+5. 河粉燙熟放碗中，鋪上牛肉，撒上配料，淋上高湯即可。`},
+  {n:3,food:"印尼炒飯",roman:"Nasi Goreng",ing:`紅蔥酥、參巴醬、沙嗲醬、海鮮、雞肉、蔬菜、雞蛋、白飯、鹽、蔥花`,
+   how:`1. 紅蔥頭、大蒜、參巴醬與沙爹醬攪拌。
+2. 熱油鍋，將海鮮、雞肉、蔬菜、雞蛋炒熟後盛出備用。
+3. 同鍋補少許油轉大火，倒入白飯快速翻炒至均勻裹上醬料。
+4. 加入炒熟的配料，翻炒均勻，以少許鹽調味即可起鍋。`},
+  {n:4,food:"越南春捲",roman:"Gỏi cuốn",ing:`米線、蝦子、豬肉、米紙、生菜、九層塔、薄荷葉、小黃瓜、紅蘿蔔、香菜、魚露`,
+   how:`1. 米線煮熟，撈出泡冰水冷卻、瀝乾。
+2. 蝦子與豬肉煮熟後放涼。
+3. 米紙放入水中浸泡數秒至微軟。
+4. 平鋪砧板上，依序放上配料。
+5. 左右往內摺，再由下往上捲成圓筒狀。
+6. 沾魚露食用。`},
+  {n:5,food:"涼拌青木瓜",roman:"Gỏi đu đủ",ing:`青木瓜、鹽、紅蘿蔔絲、蒜頭、辣椒、魚露、檸檬汁、椰糖、小番茄、菜豆、香菜、花生、水`,
+   how:`1. 青木瓜削皮去籽，刨成細絲。
+2. 加 1 匙鹽抓勻靜置軟化，用冷開水洗淨後冰鎮，瀝乾。
+3. 紅蘿蔔削皮刨細絲。
+4. 將水、蒜頭、辣椒、魚露、檸檬汁、椰糖、鹽調成醬汁。
+5. 青木瓜絲、紅蘿蔔絲、小番茄、菜豆、香菜放入大碗，淋醬汁拌勻，撒上碎花生。`},
+  {n:6,food:"炸香蕉",roman:"Pisang Goreng",ing:`香蕉
+低筋麵粉、蛋黃、奶油
+鹽、糖、水或牛奶
+沙拉油`,
+   how:`1. 香蕉剝皮，切片或條狀。
+2. 低筋麵粉、蛋黃、奶油、鹽、糖放入碗中，分次加水或牛奶調成濃稠麵糊。
+3. 鍋中倒沙拉油加熱至中火。
+4. 香蕉裹上薄麵糊，中小火油炸至金黃酥脆。
+5. 撈出放吸油紙上吸油即可。`},
+  {n:7,food:"涼拌米線",roman:"Bún trộn",ing:`米線、豬肉、小黃瓜、紅蘿蔔、洋蔥、美生菜絲、豆芽菜、大蒜、辣椒、香菜、九層塔、花生、魚露、鹽、糖`,
+   how:`1. 米線煮熟，撈起用冰水沖涼，瀝乾。
+2. 豬肉燙熟或煎熟切片；蔬菜切絲；洋蔥絲泡冷水去辛辣；蒜、辣椒切末。
+3. 蒜末、辣椒末、魚露、鹽與糖拌勻成醬汁。
+4. 米線鋪盤底，依序放上配料，撒上香菜、九層塔及碎花生，淋醬汁拌勻。`},
+  {n:8,food:"巴東牛肉",roman:"Rendang sapi",ing:`牛肋條
+紅蔥頭、蒜頭、老薑、南薑、辣椒
+香茅、肉桂、八角
+薑黃粉、羅望子醬
+糖、鹽、椰漿`,
+   how:`1. 牛肋條切塊，冷水下鍋煮滾，撈出洗淨擦乾。
+2. 辛香料切碎、香茅切段。
+3. 鍋中炒香辛香料，再加入香茅、肉桂與八角拌炒。
+4. 放入牛肋條拌炒裹上香料，加羅望子醬、糖與鹽調味。
+5. 倒入椰漿與水，煮滾後轉小火燉至軟嫩。
+6. 開蓋小火慢慢收乾醬汁至濃稠。`},
+  {n:9,food:"越式烤豬排飯",roman:"Cơm tấm sườn",ing:`帶骨豬排、香茅、蒜頭、紅蔥頭、辣椒、蔥、魚露、醬油、鹽、糖、蜂蜜、白胡椒粉、五香粉、檸檬汁、大黃瓜、蘿蔔、白醋、番茄、生菜、泰國茉莉香米、雞蛋`,
+   how:`1. 豬排洗淨擦乾，用肉錘敲打。
+2. 辛香料切碎，加入調味料拌成醃料。
+3. 豬排抹上醃料，冷藏醃至少 4 小時。
+4. 蔬菜切絲或切片，加白醋、糖與鹽醃製。
+5. 香米洗淨煮熟。
+6. 豬排中小火煎至兩面金黃熟透。
+7. 煎荷包蛋。
+8. 香米盛盤，放上豬排、荷包蛋與配菜擺盤。`},
+  {n:10,food:"薑黃飯",roman:"Nasi kuning",ing:`印度長米
+洋蔥、紅蔥頭、大蒜、香茅
+薑黃粉、黑胡椒、月桂葉
+雞高湯、椰奶
+鹽、糖`,
+   how:`1. 印度長米洗淨瀝乾。
+2. 洋蔥、紅蔥頭與大蒜切碎，香茅切段。
+3. 炒香洋蔥、紅蔥頭與大蒜。
+4. 加入薑黃粉、黑胡椒、月桂葉與香茅拌炒。
+5. 放入長米拌勻，倒入雞高湯與椰奶，加鹽與糖調味。
+6. 放入電子鍋煮熟，跳起後悶一下，翻鬆拌勻。`}
+ ]},
+ spades:{name:"黑桃（原住民）",icon:"♠",cls:"s-spades",items:[
+  {n:1,food:"生醃豬肉（阿美族）",roman:"siraw",ing:`豬肉（肥瘦相間）
+粗鹽（約肉重的 10％ 以上）`,
+   how:`1. 溫體五花肉洗乾淨並擦乾水分
+2. 豬肉切塊（可裝進罐子即可）
+3. 粗鹽均勻抹在豬肉上
+4. 放進陶瓷或玻璃罐密封，放陰涼處發酵 3～4 天`},
+  {n:2,food:"搖搖飯（排灣族）",roman:"pinuljacengan",ing:`小米、紅藜、龍葵、野莧菜、山茼蒿、鹹魚、豆腐乳`,
+   how:`1. 將小米、紅藜煮成粥
+2. 待粥煮到七分熟加入所有野菜
+＊無特別比例`},
+  {n:3,food:"阿粨（卑南族）",roman:"abay",ing:`糯米粉、小米、樹豆、鹹豬肉、水、假酸漿葉、月桃葉、麻繩`,
+   how:`1. 月桃葉水煮半小時去硬梗；樹豆泡水 5 小時煮 15 分鐘，再泡 30 分鐘；小米泡水 3 小時。
+2. 鹹豬肉切 12 等份。
+3. 糯米粉 100g 加 75g 水拌勻入滾水煮熟。
+4. 糯米粉 500g 加 325g 水拌勻，加入第 3 項揉均。
+5. 加入小米及樹豆拌勻，包入鹹豬肉及紫地瓜，取假酸漿葉包成長方型，外層再包月桃葉。
+6. 入蒸鍋，水滾後大火蒸 30 分鐘。`},
+  {n:4,food:"小米飯（布農族）",roman:"haisingmaduh",ing:`小米、水`,
+   how:`1. 小米洗淨，泡水 2 小時
+2. 小米、水比例 1:1，電子鍋煮熟後靜候 15～20 分鐘
+＊米飯靜後勿開蓋，此比例為電子鍋版本`},
+  {n:5,food:"綜合野菜湯（阿美族）",roman:"palamlam a sinafel",ing:`木鱉子、豆瓣菜、山萵苣、黃藤、過貓、水`,
+   how:`無固定配比`},
+  {n:6,food:"烘烤芋頭乾（魯凱族）",roman:"ututu",ing:`芋頭`,how:`小山芋洗淨帶皮，放入烤箱以 100°C～120°C 低溫烘烤數小時，或用食物乾燥機烘到完全乾硬，再剝除外皮。`},
+  {n:7,food:"樹豆排骨湯（布農族）",roman:"halidang balang vus",ing:`乾燥樹豆 150 公克
+豬排骨 600 公克
+生薑 1 大塊
+清水 1,800～2,000 毫升
+米酒 3 大匙
+鹽 2 茶匙`,
+   how:`1. 樹豆泡足 4～6 小時後撈起沖洗，瀝乾備用。
+2. 排骨冷水下鍋，加薑片與米酒汆燙 3～5 分鐘，撈出洗淨。
+3. 湯鍋倒水，冷水時放入樹豆、排骨與薑片，煮滾後撈去浮沫。
+4. 倒米酒，蓋鍋轉極小火慢燉 60～80 分鐘。
+5. 燉至樹豆外皮微裂、排骨軟嫩脫骨。
+6. 加鹽調味，續煮 2 分鐘即可關火。`},
+  {n:8,food:"飛魚乾（達悟族）",roman:"alibangbang",ing:`蘭嶼煙燻日曬飛魚乾 2 尾
+海鹽 1.5～2 茶匙
+清水約 1,200～1,500 毫升`,
+   how:`1. 飛魚乾表面稍微刷洗，放入冷水浸泡約 20～30 分鐘軟化。
+2. 傳統上保留整尾完整下鍋不切斷（或依碗寬對半剪成大段）。
+3. 湯鍋倒水，冷水時放入飛魚乾，開大火煮滾。
+4. 水滾後撈去浮沫，撒入鹽巴。轉中小火蓋鍋，慢火燉煮約 30～45 分鐘。`},
+  {n:9,food:"鹽浪花蟹（噶瑪蘭族）",roman:"kakihiu",ing:`浪花蟹、食用油、蒜頭、薑、辣椒、蔥、鹽`,
+   how:`1. 浪花蟹徹底洗淨後，放濾網上充分瀝乾。
+2. 熱鍋倒 500 毫升食用油，小火放入薑絲、蒜碎與辣椒片慢慢煸炒至蒜頭微金黃。
+3. 轉大火，放入浪花蟹快速翻炒約 1 分鐘至轉橘紅色。
+4. 撒入鹽巴，倒入 3 大匙清水，蓋鍋轉中火燜煮 1.5～2 分鐘。
+5. 開蓋轉大火，撒入蔥段，快炒 10 秒收乾湯汁即可盛盤。`},
+  {n:10,food:"芋頭糕（達悟族）",roman:"nimey",ing:`蘭嶼水芋 600 公克
+帶皮五花肉 400 公克
+純豬油 1 大匙
+鹽巴 1.5～2 茶匙
+清水約 500～600 毫升`,
+   how:`1. 熱鍋倒豬油，中火將五花肉塊表面煎到微微金黃。
+2. 下大塊水芋，轉大火與豬油、豬肉一起翻炒 1～2 分鐘。
+3. 撒入鹽巴，倒入清水至剛好沒過食材，煮滾後撈去浮沫。
+4. 蓋鍋轉小火慢燉 35～45 分鐘，盡量不要翻動。
+5. 筷子可輕易穿透即熟透，轉大火稍微收乾湯汁即可。`}
+ ]}
+};
+
+/* ===== 幼兒端食材（只有名稱） ===== */
+const KIDING={
+ "hearts-1":"糯米、花生、香菇、蝦米、栗子、鹹蛋黃、豬肉、竹葉、棉繩",
+ "hearts-2":"刈包麵皮、五花肉、酸菜、花生粉、香菜",
+ "hearts-3":"生臭豆腐、泡菜、香菜、食用油、蒜泥、醬油膏",
+ "hearts-4":"麵線、豬大腸、香菜、蒜泥、柴魚高湯、太白粉水",
+ "hearts-5":"糯米粉、白砂糖、水、食用油、花生糖粉",
+ "hearts-6":"潤餅皮、豬肉絲、豆干、蛋皮、高麗菜、豆芽菜、紅蘿蔔、花生粉、香菜",
+ "hearts-7":"大白菜、魚皮、干貝、豬皮、排骨、鳥蛋、扁魚、金鉤蝦米、乾香菇、大骨湯、雞腳",
+ "hearts-8":"豬絞肉、紅蔥頭、蒜頭、白飯、冰糖、醬油、米酒、白胡椒粉",
+ "hearts-9":"虱目魚、薑絲、蔥、芹菜、水、米酒、鹽、白胡椒粉",
+ "hearts-10":"五花肉、蒜頭、薑、蔥、八角、冰糖、米酒、醬油、水",
+ "clubs-1":"在來米粉、水、地瓜粉、韭菜、豆芽菜、肉燥、油蔥酥、高湯",
+ "clubs-2":"糯米、水、花生粉、黑芝麻粉、砂糖",
+ "clubs-3":"在來米粉、地瓜粉、糯米粉、水、黑糖、二砂糖",
+ "clubs-4":"五花肉、蒜頭、黑胡椒、鹽、米酒",
+ "clubs-5":"在來米粉、太白粉、水、韭菜、豆芽菜、肉燥、油蔥酥",
+ "clubs-6":"豬肉、魷魚乾、豆干、芹菜、蒜頭、醬油",
+ "clubs-7":"茶葉、燕麥、花生、芝麻、南瓜子、葵瓜子、糖、熱開水",
+ "clubs-8":"豬大腸、薑絲、白醋、蔥、蒜頭、糖、水",
+ "clubs-9":"客家酸菜、豬肉片、薑絲、蔥、高湯、鹽",
+ "clubs-10":"糯米粉、水、黑糖、薑汁、花生粉、芝麻",
+ "diamonds-1":"法國麵包、豬肝醬、豬肉、越南火腿、醃蘿蔔、香菜、生菜、魚露",
+ "diamonds-2":"牛肉、洋蔥、大蒜、糖、鹽、河粉、檸檬汁、豆芽菜、九層塔、薄荷、水",
+ "diamonds-3":"紅蔥酥、參巴醬、沙嗲醬、海鮮、雞肉、蔬菜、雞蛋、白飯、鹽、蔥花",
+ "diamonds-4":"米線、蝦子、豬肉、米紙、生菜、九層塔、薄荷葉、小黃瓜、紅蘿蔔、香菜、魚露",
+ "diamonds-5":"青木瓜、鹽、紅蘿蔔絲、蒜頭、辣椒、魚露、檸檬汁、椰糖、小番茄、菜豆、香菜、花生、水",
+ "diamonds-6":"香蕉、低筋麵粉、蛋黃、奶油、鹽、糖、水、沙拉油",
+ "diamonds-7":"米線、豬肉、小黃瓜、紅蘿蔔、洋蔥、美生菜絲、豆芽菜、大蒜、辣椒、香菜、九層塔、花生、魚露、鹽、糖",
+ "diamonds-8":"牛肋條、紅蔥頭、蒜頭、老薑、南薑、辣椒、香茅、肉桂、八角、薑黃粉、羅望子醬、糖、鹽、椰漿",
+ "diamonds-9":"帶骨豬排、香茅、蒜頭、紅蔥頭、辣椒、蔥、魚露、醬油、鹽、糖、蜂蜜、白胡椒粉、五香粉、檸檬汁、大黃瓜、蘿蔔、白醋、番茄、生菜、泰國茉莉香米、雞蛋",
+ "diamonds-10":"印度長米、洋蔥、紅蔥頭、大蒜、香茅、薑黃粉、黑胡椒、月桂葉、雞高湯、椰奶、鹽、糖",
+ "spades-1":"豬肉、粗鹽",
+ "spades-2":"小米、紅藜、龍葵、野莧菜、山茼蒿、鹹魚、豆腐乳",
+ "spades-3":"糯米粉、小米、樹豆、鹹豬肉、水、假酸漿葉、月桃葉、麻繩",
+ "spades-4":"小米、水",
+ "spades-5":"在地野菜、木鱉子、豆瓣菜、山萵苣、黃藤、菜蕨",
+ "spades-6":"芋頭",
+ "spades-7":"樹豆、豬排骨、生薑、水、米酒、鹽",
+ "spades-8":"飛魚乾、海鹽、水",
+ "spades-9":"浪花蟹、食用油、蒜頭、老薑、紅辣椒、青蔥、鹽",
+ "spades-10":"蘭嶼水芋、五花肉、豬油、鹽、水"
+};
+
+/* 強制覆蓋：印尼炒飯（雞肉/蔬菜/海鮮合併一項） */
+KIDING["diamonds-3"]="紅蔥酥、參巴醬、沙嗲醬、雞肉/蔬菜/海鮮、雞蛋、白飯、鹽、蔥花";
+FOODS.diamonds.items[2].ing="紅蔥酥、參巴醬、沙嗲醬、雞肉/蔬菜/海鮮、雞蛋、白飯、鹽、蔥花";
+
+/* 肉粽：麻繩 → 棉繩 */
+KIDING["hearts-1"]="糯米、花生、香菇、蝦米、栗子、鹹蛋黃、豬肉、竹葉、棉繩";
+FOODS.hearts.items[0].ing=KIDING["hearts-1"];
+
+/* 強制覆蓋：閩南食材 */
+(function(){
+ const H={
+  1:"糯米、花生、香菇、蝦米、栗子、鹹蛋黃、豬肉、竹葉、棉繩",
+  2:"刈包麵皮、五花肉、酸菜、花生粉、香菜",
+  3:"生臭豆腐、泡菜、香菜、食用油、蒜泥、醬油膏",
+  4:"麵線、豬大腸、香菜、蒜泥、柴魚高湯、太白粉水",
+  5:"糯米粉、白砂糖、水、食用油、花生糖粉",
+  6:"潤餅皮、豬肉絲、豆干、蛋皮、高麗菜、豆芽菜、紅蘿蔔、花生粉、香菜",
+  7:"大白菜、魚皮、干貝、豬皮、排骨、鳥蛋、扁魚、金鉤蝦米、乾香菇、大骨湯、雞腳",
+  8:"豬絞肉、紅蔥頭、蒜頭、白飯、冰糖、醬油、米酒、白胡椒粉",
+  9:"虱目魚、薑絲、蔥、芹菜、水、米酒、鹽、白胡椒粉",
+  10:"五花肉、蒜頭、薑、蔥、八角、冰糖、米酒、醬油、水"
+ };
+ for(const k in H){ KIDING["hearts-"+k]=H[k]; FOODS.hearts.items[Number(k)-1].ing=H[k]; }
+})();
+
+/* 強制覆蓋：原住民食材（確保不被舊資料蓋掉） */
+(function(){
+ const S={
+  1:"豬肉、粗鹽",
+  2:"小米、紅藜、龍葵、野莧菜、山茼蒿、鹹魚、豆腐乳",
+  3:"糯米粉、小米、樹豆、鹹豬肉、水、假酸漿葉、月桃葉、麻繩",
+  4:"小米、水",
+  5:"木鱉子、豆瓣菜、山萵苣、黃藤、過貓、水",
+  6:"芋頭",
+  7:"樹豆、豬排骨、生薑、水、米酒、鹽",
+  8:"飛魚乾、海鹽、水",
+  9:"浪花蟹、食用油、蒜頭、薑、辣椒、蔥、鹽",
+  10:"蘭嶼水芋、五花肉、豬油、鹽、水"
+ };
+ for(const k in S){ KIDING["spades-"+k]=S[k]; FOODS.spades.items[Number(k)-1].ing=S[k]; }
+})();
+
+/* 強制覆蓋：刈包食材 */
+KIDING["hearts-2"]="刈包麵皮、滷五花豬、酸菜、花生粉、香菜";
+FOODS.hearts.items[1].ing=KIDING["hearts-2"];
+
+/* ===== 玩法 ===== */
+const GAMES=[
+ {icon:"🃏",title:"翻翻樂",sections:[
+   {label:"🎯 遊戲目的",type:"p",text:"透過翻卡片對卡片內容更加印象深刻，並增加幼兒記憶（位置）的能力。"},
+   {label:"🧰 遊戲準備",type:"p",text:"將普通撲克牌及族語卡混在一起（打亂），將背面朝上蓋在桌上。"},
+   {label:"📖 遊戲玩法",type:"ol",items:["將普通撲克牌及族語卡混在一起（打亂）。","將背面朝上蓋在桌上。","一次翻兩張，若食物相同可拿走，若不同則蓋回去。","直到桌面上的卡牌全數翻完。"]},
+   {label:"👥 人數",type:"p",text:"一人以上即可玩。個人：全數翻完即可。多人：比誰拿到的卡牌最多（看誰配對成功最多組）。"},
+   {label:"⭐ 難度調整",type:"lv",items:["簡單版：使用一個族群的卡牌。","進階版：使用多種族群的卡牌。"]}]},
+ {icon:"📱",title:"NFC 點讀（族語撲克牌）",sections:[
+   {label:"🎯 遊戲目的",type:"p",text:"透過點讀筆聆聽不同國家的語言，讓幼兒探索不同語言，並透過圖片配對、聆聽辨識及模仿等遊戲，培養幼兒的聽覺辨識、語言模仿及多元文化認識能力。"},
+   {label:"🧰 遊戲準備",type:"p",text:"選擇一個族群的卡牌，依能力增加卡牌種類。初次遊戲建議先使用一個族群的卡牌。（族語撲克牌上貼有 NFC 感應標籤，用手機感應即可聽族語。）"},
+   {label:"📖 遊戲玩法（個人）",type:"ol",items:["將卡牌疊成一疊或全部排出來。","拿手機感應感應處（NFC），聽該食物的族語發音。","幼兒可模仿並學習語言。"]},
+   {label:"📖 遊戲玩法（小組）",type:"ol",items:["將所有感應卡牌排列出來。","一位幼兒唸出其他國家的語言。","其他幼兒找出相對應的食物即可得分。"]},
+   {label:"⭐ 難度調整",type:"lv",items:["簡單版：使用一個族群的卡牌模仿並學習語言。","進階版：使用多種族群的卡牌，透過感應辨識食物。"]}]},
+ {icon:"🍲",title:"食材卡",sub:[
+   {icon:"🍲",title:"食物食材配對",sections:[
+     {label:"🎯 遊戲目的",type:"p",text:"透過食物卡與食材卡的配對，讓幼兒認識不同食物是由哪些食材所組成。（食物卡是撲克牌四個花色 1~10，共 40 張）"},
+     {label:"🧰 遊戲準備",type:"ol",items:["將 40 張食物卡洗牌後，放置於桌面中央。","將所有食材卡混合洗牌後，放置於另一區域。","食物卡背面朝上，讓幼兒可以看到完整的食物。","食材卡可以正面朝上散放。","遊戲可以由 2～4 名幼兒一起進行。"]},
+     {label:"📖 遊戲玩法",type:"ol",items:["每位幼兒輪流抽取或選擇一張食物卡。","幼兒觀察食物卡上的食物。","根據食物圖片，從食材卡中找出製作這項食物所需要的食材。","將找到的食材卡放置在食物卡旁邊。","幼兒完成後，由老師或其他幼兒協助確認答案。","如果所有食材都正確，幼兒即可獲得這張食物卡。","如果有食材錯誤，將錯誤的食材卡放回原處，再繼續尋找正確的食材。","輪流進行遊戲，直到所有食物卡都完成配對。"]},
+     {label:"💡 舉例",type:"ex",text:"幼兒抽到「小米粥」食物卡，需要從食材卡中找出：小米＋水。確認兩張食材卡都正確後，即完成「小米粥」的配對。"},
+     {label:"🏁 遊戲結束",type:"p",text:"所有食物卡都完成配對後遊戲結束。可以計算每位幼兒獲得的食物卡數量，獲得最多食物卡的幼兒獲勝。"},
+     {label:"⭐ 難度調整",type:"lv",items:["簡單版：食材卡正面朝上，幼兒直接尋找。","進階版：食材卡背面朝上，幼兒抽取後判斷是否為需要的食材，不符合的再蓋回繼續尋找。","挑戰版：限定時間，在時間內完成食材配對。"]}]},
+   {icon:"🤔",title:"猜猜我可以做成什麼食物？",sections:[
+     {label:"🎯 遊戲目的",type:"p",text:"將遊戲方向由「食物找食材」改為「食材找食物」，讓幼兒透過食材進行觀察、聯想與推理，猜測可以製作出的食物。"},
+     {label:"🧰 遊戲準備",type:"ol",items:["將 40 張食物卡洗牌後，全部正面朝上放置於桌面。","將食材卡混合洗牌。","每次抽取一組食材卡進行遊戲。","遊戲可以由 2～4 名幼兒一起進行。"]},
+     {label:"📖 遊戲玩法",type:"ol",items:["由老師或其中一名幼兒抽取一組食材卡。","將抽出的食材卡放在桌面上，讓其他幼兒觀察。","幼兒觀察食材後，思考這些食材可以組合成什麼食物。","幼兒從 40 張食物卡中找出符合的食物卡。","找到後，將食物卡放在食材卡旁邊。","說出食物名稱。","答案確認正確後，即可獲得這組卡牌。","如果答案錯誤，則將食物卡放回原處，由下一位幼兒繼續猜測。"]},
+     {label:"💡 舉例",type:"ex",text:"老師拿出：小米＋水，詢問：「猜猜看，這些食材可以做成什麼食物？」幼兒從食物卡中找到「小米粥」，配對成功後即可獲得一分。"},
+     {label:"🏁 遊戲結束",type:"p",text:"進行數回合後，計算每位幼兒獲得的分數。答對一組食材與食物即可獲得 1 分，最後分數最高的幼兒獲勝。"},
+     {label:"⭐ 難度調整",type:"lv",items:["簡單版：提供 2～3 張可能的食物卡讓幼兒選擇。","一般版：提供全部 40 張食物卡讓幼兒尋找。","進階版：不提供食物卡，幼兒直接說出食物名稱。"]}]},
+   {icon:"🔍",title:"食材大搜查",sections:[
+     {label:"🎯 遊戲目的",type:"p",text:"讓幼兒發現「同一種食材可以出現在不同食物中」，透過尋找與分類的方式，建立食材與多種食物之間的關聯。"},
+     {label:"🧰 遊戲準備",type:"ol",items:["將 40 張食物卡全部正面朝上，分散放在桌面上。","將所有食材卡洗牌。","每回合抽取一張食材卡。","遊戲可以由 2～4 名幼兒一起進行。"]},
+     {label:"📖 遊戲玩法",type:"ol",items:["將 40 張食物卡全部攤開。","由幼兒抽取一張食材卡。","將食材卡放在桌面中央。","幼兒觀察食材卡上的食材。","幼兒從 40 張食物卡中尋找所有包含這項食材的食物。","找到一張後，將該食物卡拿到自己的面前。","繼續尋找，直到找不到其他符合的食物。","老師、家長或幼兒協助確認其他幼兒找到的食物是否都包含該食材。","每找到一張正確的食物卡，即可獲得 1 分。","換下一位幼兒抽取新的食材卡，繼續進行遊戲。"]},
+     {label:"💡 舉例",type:"ex",text:"幼兒抽到「香菜」，需要從 40 張食物卡中尋找所有有使用香菜的食物，例如：臭豆腐、大腸麵線、潤餅、越南法國麵包、春捲。"},
+     {label:"🏁 遊戲結束",type:"p",text:"可以設定遊戲進行 5 回合，或直到所有食材卡都使用過一次。最後統計每位幼兒的分數，分數最高者獲勝。"},
+     {label:"⭐ 難度調整",type:"lv",items:["簡單版：將食材卡換成答案卡進行。","一般版：幼兒自行找出所有相關食物。","進階版：設定時間限制，例如 30 秒內找出最多符合的食物。"]}]},
+   {icon:"🧠",title:"食材記憶王",sections:[
+     {label:"🎯 遊戲目的",type:"p",text:"透過記憶與配對遊戲，讓幼兒記住不同食物所使用的食材，培養幼兒的記憶、觀察及配對能力。"},
+     {label:"🧰 遊戲準備",type:"ol",items:["選擇數種食物及其對應食材，依能力可以逐漸增加食材卡數量。","將食物卡與食材卡背面朝上排列。","可以依幼兒能力決定遊戲使用的卡牌數量。","初次遊戲建議先使用 3~5 種食物。"]},
+     {label:"📖 遊戲玩法",type:"ol",items:["所有卡牌背面朝上排列。","幼兒輪流翻開卡牌。","每次可以翻開一張食物卡及一組食材卡。","幼兒需要判斷翻出的食物與食材是否相符。","如果配對正確，幼兒可以保留這組卡牌並獲得 1 分。","如果配對錯誤，將卡牌翻回背面。","下一位幼兒繼續進行。","遊戲過程中，幼兒需要記住之前翻過的卡牌位置，增加找到正確配對的機會。"]},
+     {label:"💡 舉例",type:"ex",text:"幼兒翻開「小米粥」，接著翻到「小米＋水」，配對成功即可拿走。如果翻到「小米粥＋香菜」，則配對錯誤，需要將小米粥、小米和香菜卡牌翻回去。"},
+     {label:"🏁 遊戲結束",type:"p",text:"當桌面上的卡牌全部被配對完成後遊戲結束。最後計算每位幼兒獲得的配對組數，最多者獲勝。"},
+     {label:"⭐ 難度調整",type:"lv",items:["簡單版：一對一對應，一張食物卡對應一張食材卡，使用較少組卡牌。","一般版：可依能力增加食材卡，並使用 10～15 種食物。","進階版：增加食物種類，並增加每種食物所需要的食材數量。"]}]}
+ ]}
+];
+
+GAMES.push({
+ icon:"🎲", title:"情緒小人骰子",
+ sections:[
+  {label:"🎯 遊戲目的", type:"p", text:"讓幼兒透過不同情緒去演戲，讓幼兒可以從中發現當每個人面對同一件事可能會有不同樣的情緒存在，甚至會有複雜的情緒。"},
+  {label:"📖 遊戲玩法", type:"lv", items:[
+    "玩法一：用一句話，搭配骰子，骰到什麼情緒就用那個情緒說出那句話。",
+    "玩法二：搭配故事書，遇到某個情節利用骰子骰出不同的情緒，讓幼兒去演繹，並發想後續不一樣的故事走向。"
+  ]}
+ ]
+});
+
+/* ===== 常見問題 ===== */
+const FAQS=[
+ {icon:"🎂",title:"我的孩子幾歲可以玩？",text:"此教具專為 2～6 歲幼兒設計，可依照幼兒程度調整遊戲難度，就算幼兒長大超過 6 歲了，此套教具依舊適合當成幼兒平時的休閒娛樂呦！"},
+ {icon:"🍚",title:"為什麼用食物教情緒？",text:"食物是孩子最熟悉，經常接觸的東西。我們希望透過吃過的味道、經驗、感受，讓孩子進一步去學習認識情緒及說出自己的情緒。"},
+ {icon:"🌏",title:"為什麼有不同族群的牌？",text:"讓孩子認識台灣多元飲食文化——閩南、客家、新住民與原住民的好味道，學會欣賞與尊重差異。"},
+ {icon:"🈶",title:"不識字的孩子能玩嗎？",text:"可以。牌面以圖片為主，孩子看圖就能玩。族語卡搭配 NFC 感應，不識字也能聽發音、學語言。"}
+];
+
+/* ===== 情緒 ===== */
+const EMOTIONS=[
+ {key:"happy",emoji:"😊",name:"快樂",c:"c-happy",img:"https://drive.google.com/thumbnail?id=1yvJ5SGPGh22pBVO3nVEMMD7exa996AzA&sz=w600",tip:"吃到好吃的肉粽，我會笑咪咪！",q:"什麼事情會讓你覺得快樂呢？"},
+ {key:"angry",emoji:"😠",name:"憤怒",c:"c-angry",img:"https://drive.google.com/thumbnail?id=19c-jrYnTOvgfoxC5DKLIIxC4WXuPf-Zu&sz=w600",tip:"玩具被搶走，我會好生氣！",q:"生氣的時候，你會做什麼呢？"},
+ {key:"sad",emoji:"😢",name:"悲傷",c:"c-sad",img:"https://drive.google.com/thumbnail?id=1SeVXJbytWm_ORantjulkF9Iz3aPN_UlU&sz=w600",tip:"想媽媽的時候，我會想哭哭。",q:"難過的時候，誰會抱抱你呢？"},
+ {key:"surprise",emoji:"😲",name:"驚訝",c:"c-surprise",img:"https://drive.google.com/thumbnail?id=1Dela8FfRnimMM9cZw5WCvehehShl2MJc&sz=w600",tip:"哇！原來臭豆腐是這個味道！",q:"你有被什麼事情嚇一跳嗎？"},
+ {key:"fear",emoji:"😨",name:"恐懼",c:"c-fear",img:"https://drive.google.com/thumbnail?id=1wMnaHTm16X0D-JUvxest-ju3aONHMgGg&sz=w600",tip:"黑黑的地方，我會有一點怕怕。",q:"害怕的時候，可以找誰陪你？"},
+ {key:"disgust",emoji:"😖",name:"厭惡",c:"c-disgust",img:"https://drive.google.com/thumbnail?id=1G_wRFR01BaM8cbGKf83X5Ad6U3KhwYht&sz=w600",tip:"吃到苦苦的菜，我會皺眉頭。",q:"有沒有你不喜歡吃的東西呢？"}
+];
+
+function go(w){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('home').style.display='none';
+  if(w==='home'){document.getElementById('home').style.display='block';return;}
+  document.getElementById(w).classList.add('active');
+  if(w==='parent')renderParent(); if(w==='child')renderChild();
+  window.scrollTo(0,0);
+}
+function renderParent(){
+  document.getElementById('suitCards').innerHTML=Object.keys(FOODS).map(k=>`<div class="suitcard ${FOODS[k].cls}" onclick="openSuit('${k}')"><span class="si">${FOODS[k].icon}</span><span class="st">${FOODS[k].name}</span></div>`).join('');
+  document.getElementById('gameCards').innerHTML=GAMES.map((g,i)=>`<div class="qcard" onclick="openGame(${i})"><span class="qi">${g.icon}</span><span class="t">${g.title}</span></div>`).join('');
+  document.getElementById('faqCards').innerHTML=FAQS.map((f,i)=>`<div class="qcard" onclick="openFaq(${i})"><span class="qi">${f.icon}</span><span class="t">${f.title}</span></div>`).join('');
+  if(/Edg\//.test(navigator.userAgent))document.getElementById('edgeTip').style.display='block';
+  if(!document.getElementById('msgs').children.length)botMsg('您好！我是食食小幫手 👋 想了解教具怎麼用，都可以問我喔！');
+}
+function speakText(t){lastSpeech=t;lastAudio='';speak(t);}
+function openSuit(key){
+  const s=FOODS[key];
+  let h=`<div class="pe">${s.icon}</div><h3>${s.name}</h3>`;
+  s.items.forEach((it,i)=>{h+=`<div class="foodrow" onclick="openFood('${key}',${i})"><span class="num">${it.n}</span><span class="fname">${it.food}<br><span class="froman">${it.roman}</span></span></div>`;});
+  h+=`<div class="popactions"><button class="btn" onclick="closePopup()">關閉</button></div>`;
+  document.getElementById('popupbox').innerHTML=h;document.getElementById('popup').classList.add('show');
+  speakText(s.name+'，共十種食物。');
+}
+function openFood(key,i){
+  const s=FOODS[key];const it=s.items[i];
+  document.getElementById('popupbox').innerHTML=`<div class="pe">${s.icon}</div><h3>${it.food}</h3>
+    <img src="${foodImgPath(key,i)}" alt="${it.food}" style="width:100%;max-width:190px;border-radius:16px;display:block;margin:0 auto 14px;" onerror="this.style.display='none'">
+    <div class="sec"><span class="lbl">花色 / 數字</span><p>${s.name.replace(/（.*）/,'')}　${it.n}</p></div>
+    <div class="sec"><span class="lbl">發音</span><p class="roman">${it.roman}</p></div>
+    <div class="sec"><span class="lbl blue">📋 材料</span><div class="pre">${it.ing}</div></div>
+    <div class="sec"><span class="lbl green">🍳 做法</span><div class="pre">${it.how}</div></div>
+    <div class="popactions"><button class="btn white" onclick="openSuit('${key}')">← 返回列表</button><button class="btn" onclick="closePopup()">關閉</button></div>`;
+  document.getElementById('popup').classList.add('show');lastSpeech=it.food+'。';lastAudio='';
+}
+function openGame(i){
+  const g=GAMES[i];
+  if(g.sub){
+    let h=`<div class="pe">${g.icon}</div><h3>${g.title}</h3><p class="hint" style="text-align:center;margin-bottom:14px;">請選擇一種玩法</p>`;
+    g.sub.forEach((s,j)=>{h+=`<div class="foodrow" onclick="openSub(${i},${j})"><span class="fname">${s.icon} ${s.title}</span></div>`;});
+    h+=`<div class="popactions"><button class="btn" onclick="closePopup()">關閉</button></div>`;
+    document.getElementById('popupbox').innerHTML=h;document.getElementById('popup').classList.add('show');
+    speakText(g.title+'。請選擇一種玩法：'+g.sub.map(s=>s.title).join('、'));
+  } else showDetail(g,null);
+}
+function openSub(i,j){showDetail(GAMES[i].sub[j],i);}
+function showDetail(g,backIdx){
+  let h=`<div class="pe">${g.icon}</div><h3>${g.title}</h3>`;
+  g.sections.forEach(s=>{
+    h+=`<div class="sec"><span class="lbl">${s.label}</span>`;
+    if(s.type==='p')h+=`<p>${s.text.replace(/\n/g,'<br>')}</p>`;
+    else if(s.type==='ol')h+=`<ol>${s.items.map(x=>`<li>${x}</li>`).join('')}</ol>`;
+    else if(s.type==='ex')h+=`<div class="ex">${s.text}</div>`;
+    else if(s.type==='lv')h+=`<div class="lv">${s.items.map(x=>'• '+x).join('<br>')}</div>`;
+    h+=`</div>`;
+  });
+  h+=`<div class="popactions">`;
+  if(backIdx!==null)h+=`<button class="btn white" onclick="openGame(${backIdx})">← 返回食材卡</button>`;
+  h+=`<button class="btn blue" onclick="replay()">🔊 再聽一次</button><button class="btn" onclick="closePopup()">好，我懂了 👍</button></div>`;
+  document.getElementById('popupbox').innerHTML=h;document.getElementById('popup').classList.add('show');
+  let str=g.title+'。';
+  g.sections.forEach(s=>{str+=s.label.replace(/[^\u4e00-\u9fa5]/g,'')+'。';str+=(s.items?s.items.join('。'):s.text)+'。';});
+  lastSpeech=str;lastAudio='';speak(str);
+}
+function openFaq(i){
+  const f=FAQS[i];
+  document.getElementById('popupbox').innerHTML=`<div class="pe">${f.icon}</div><h3>${f.title}</h3><div class="sec"><p>${f.text}</p></div>
+    <div class="popactions"><button class="btn blue" onclick="replay()">🔊 再聽一次</button><button class="btn" onclick="closePopup()">好，我懂了 👍</button></div>`;
+  document.getElementById('popup').classList.add('show');lastSpeech=f.title+'。'+f.text;lastAudio='';speak(lastSpeech);
+}
+function closePopup(){ stopAudio(); document.getElementById('popup').classList.remove('show'); }
+function botMsg(t){const d=document.createElement('div');d.className='msg bot';d.textContent=t;document.getElementById('msgs').appendChild(d);document.getElementById('msgs').scrollTop=1e6;}
+function botChips(list){
+  const d=document.createElement('div');
+  d.style.cssText='display:flex;gap:8px;flex-wrap:wrap;';
+  list.forEach(it=>{const b=document.createElement('button');b.className='chip';b.textContent=it.t;b.onclick=it.f;d.appendChild(b);});
+  const m=document.getElementById('msgs'); m.appendChild(d); m.scrollTop=1e6;
+}
+function meMsg(t){const d=document.createElement('div');d.className='msg me';d.textContent=t;document.getElementById('msgs').appendChild(d);document.getElementById('msgs').scrollTop=1e6;}
+function send(){const el=document.getElementById('chatInput');if(!el.value.trim())return;const q=el.value.trim();el.value='';ask(q);}
+function findFood(n){for(const k in FOODS){for(const it of FOODS[k].items){if(n&&it.food.includes(n))return it;}}return null;}
+function ask(q){
+  meMsg(q);
+  setTimeout(()=>{
+    let a='這個問題我比較不熟，建議直接問老師喔～我主要回答這套教具的相關問題 😊';
+    const s=q.replace(/\s/g,'');
+    const hit=findFood(s.replace(/怎麼做|做法|食譜|材料|食材|怎麼煮|作法/g,''));
+    if(hit) a=hit.food+'的作法：\n'+hit.how+'\n\n📋 材料：\n'+hit.ing;
+    else if(/翻翻樂/.test(s)){
+      const g=GAMES[0];
+      const steps=g.sections.find(x=>x.type==='ol').items.join('');
+      const people=g.sections.find(x=>x.label.includes('人數')).text;
+      const levels=g.sections.find(x=>x.label.includes('難度')).items.join('');
+      if(/幾個人|多少人|幾人|人數|幾位|一個人|一人/.test(s)) a='翻翻樂'+people;
+      else if(/難度|簡單|困難|進階|較難/.test(s)) a='翻翻樂的難度調整：'+levels;
+      else if(/教具|準備什麼|要準備|準備/.test(s)) a='翻翻樂要準備普通撲克牌及族語撲克牌。';
+      else a='翻翻樂：'+steps+'。'+people;
+    }
+    else if(/nfc|點讀|感應/i.test(s)){a='NFC 點讀：'+GAMES[1].sections.filter(x=>x.type==='ol').map(x=>x.items.join('')).join('');}
+    else if(/食物卡|撲克|花色/.test(s)) a='食物卡共有四種花色：愛心（閩南）、梅花（客家）、菱形（新住民）、黑桃（原住民），每種花色 1–10 各是一個食物。';
+    else if(/食材卡/.test(s)){
+      const txt='食材卡有四種玩法，點下面的按鈕看完整規則：';
+      botMsg(txt); speak(txt);
+      botChips([
+        {t:'🍲 食物食材配對', f:function(){openSub(2,0);}},
+        {t:'🤔 猜猜我可以做成什麼食物？', f:function(){openSub(2,1);}},
+        {t:'🔍 食材大搜查', f:function(){openSub(2,2);}},
+        {t:'🧠 食材記憶王', f:function(){openSub(2,3);}}
+      ]);
+      return;
+    }
+    else if(/骰子|情緒小人/.test(s)) a='情緒小人骰子的玩法：\n1. 用一句話搭配骰子，骰到什麼情緒，就用那個情緒說出那句話。\n2. 搭配故事書，遇到某個情節時骰出不同情緒，讓幼兒演繹，並發想後續不一樣的故事走向。';
+    else if(/注音|ㄅㄆㄇ/.test(s)) a='幼兒端的文字都有加上注音喔，方便孩子自己念。';
+    else if(/幾歲|年齡|多大|年紀/.test(s)) a=FAQS[0].text;
+    else if(/生氣|哭|不想玩|鬧|情緒|安撫/.test(s)) a='先陪著他，不急著講道理。可以說「我知道你很生氣」，並請他指指哪個情緒小人像現在的他。';
+    else if(/sel|情緒學習/i.test(s)) a='SEL 是社會情緒學習，幫助孩子認識自己與他人的情緒，學會表達、同理與調節，是這套教具的核心目標。';
+    else if(/食物|為什麼用食物|吃/.test(s)) a=FAQS[1].text;
+    else if(/族群|原住民|客家|新住民|閩南|文化/.test(s)) a=FAQS[2].text;
+    else if(/多久|時間|幾分鐘/.test(s)) a='2–3 歲約 5–10 分鐘；4–6 歲約 15–20 分鐘。孩子沒興趣就休息，不要硬撐。';
+    else if(/不識字|識字|認字/.test(s)) a=FAQS[3].text;
+    botMsg(a);speak(a);
+  },420);
+}
+
+/* ===== 幼兒端 ===== */
+const INGIMG={
+ "clubs-8|豬大腸":"https://lh3.googleusercontent.com/d/1lygfjlkkDPaBhZnxhYxWlkgb3qGfEgU8",
+ "clubs-8|薑絲":"https://lh3.googleusercontent.com/d/1eC7Hu1_1fUdQjhy94KdIORkrIb33sZvq",
+ "clubs-8|白醋":"https://lh3.googleusercontent.com/d/1hM1B6kDqAhsjA99q0-s-Yzpqv3GOLRvB",
+ "clubs-8|蔥":"https://lh3.googleusercontent.com/d/1oBvIRDpWMaI9Hu0K6nZv-8EP5zxoTNDJ",
+ "clubs-8|蒜頭":"https://lh3.googleusercontent.com/d/1qAM_ccKKojyl27Q1XM4K4e9IPwTmhygL",
+ "clubs-8|糖":"https://lh3.googleusercontent.com/d/18piKkKhjAzzayEuQoPvlWst5M7JK157-",
+ "clubs-8|水":"https://lh3.googleusercontent.com/d/1H1JolWrMymAZgUJ31M9m4K5sMJvdoMof",
+ "clubs-7|茶葉":"https://lh3.googleusercontent.com/d/1z34NChEQv01FhtSGj7mVkOtVBUxQqh8P",
+ "clubs-7|燕麥":"https://lh3.googleusercontent.com/d/1ON8O-R4yUVjTe-VPWdQb4SGSN8_4lErL",
+ "clubs-7|花生":"https://lh3.googleusercontent.com/d/1MgHowAhWqScAl4nfxVfSE7Ccibe5nU3_",
+ "clubs-7|芝麻":"https://lh3.googleusercontent.com/d/1fXBj4WVo8XJ1repSnbR9uDwbRwiaDDXC",
+ "clubs-7|南瓜子":"https://lh3.googleusercontent.com/d/1sWNfOpG4xgJYceg2TckWpXK18ESJhB2i",
+ "clubs-7|葵瓜子":"https://lh3.googleusercontent.com/d/1TRHluT-AHxZzQ7t2x59opBCQNhl0W7CJ",
+ "clubs-7|糖":"https://lh3.googleusercontent.com/d/1DyQQHbZ4Y9FyxhzBtUgaa-4vNIPLsliY",
+ "clubs-7|熱開水":"https://lh3.googleusercontent.com/d/1bD4JWeh8hv_ZyLQG_CJWrMFi2OnlCMe0",
+ "clubs-2|糯米":"https://lh3.googleusercontent.com/d/1NOBm-vfaeY80g7F5C9S1VtiShFdz8UOb",
+ "clubs-2|水":"https://lh3.googleusercontent.com/d/1ypDc0IhYMUjyuYECuMji99TAnbgkw0H1",
+ "clubs-2|花生粉":"https://lh3.googleusercontent.com/d/1IPJ7Kh8i-a8f0cMYJa3cQ3y5NAHbZ8_u",
+ "clubs-2|黑芝麻粉":"https://lh3.googleusercontent.com/d/1JqB-gnwSwJ-Q0J0Y69ugYyTixWBHPIx4",
+ "clubs-2|砂糖":"https://lh3.googleusercontent.com/d/1IoMcz309Us09OGXbR33M7c-YHB6amQ9F",
+ "clubs-9|客家酸菜":"https://lh3.googleusercontent.com/d/1I4cShuyZzVPv9e4xbFUcusO6OB3iaXew",
+ "clubs-9|豬肉片":"https://lh3.googleusercontent.com/d/13PDac6VzEmO_yLaHlR0MjTWrEQvFhT8R",
+ "clubs-9|薑絲":"https://lh3.googleusercontent.com/d/1pgkWpOuA8odGEt9q95lFH7eha6xiFX7K",
+ "clubs-9|蔥":"https://lh3.googleusercontent.com/d/17QddA88OE-gwEnfInVPAAmPsQcsjTVSH",
+ "clubs-9|高湯":"https://lh3.googleusercontent.com/d/16Zw51xVVcolZj5AoRCBpwDdGGre0MMdl",
+ "clubs-9|鹽":"https://lh3.googleusercontent.com/d/1mpJriubu5tzXO-QYLVGBtrlU_iOYLItD",
+ "clubs-5|在來米粉":"https://lh3.googleusercontent.com/d/1ULlcXhQIj0VnmKS3VkaBAUxsuV7nC-8P",
+ "clubs-5|太白粉":"https://lh3.googleusercontent.com/d/1q4NOb_Vlg12CZImN_qTQr7Uj3W-3AFhf",
+ "clubs-5|水":"https://lh3.googleusercontent.com/d/1qP9kLcAIXRRVd4rvOJ1TzgegE38kVLsB",
+ "clubs-5|韭菜":"https://lh3.googleusercontent.com/d/1M8w-blZ5GjKCPY9AClM7SKxUAdLIyndg",
+ "clubs-5|豆芽菜":"https://lh3.googleusercontent.com/d/1lIbJHSk0uySDRbZ7OLqChun0Y-Ni9TTf",
+ "clubs-5|肉燥":"https://lh3.googleusercontent.com/d/10m8jVPGx8MYW8coYvnhApJvl1GRJWMfF",
+ "clubs-5|油蔥酥":"https://lh3.googleusercontent.com/d/1-qWnTo416o7qEa9_TEQmDBbcjetT2sPL",
+ "clubs-4|五花肉":"https://lh3.googleusercontent.com/d/1rcixEi_rZHEIquni6dw4bT0HTruqA8-B",
+ "clubs-4|蒜頭":"https://lh3.googleusercontent.com/d/1RxeSgH60uMo3-o25YDleeQWiRV3r_n3S",
+ "clubs-4|黑胡椒":"https://lh3.googleusercontent.com/d/1QyMmIp65GodbrzYD8XjPWAblncxEAqNM",
+ "clubs-4|鹽":"https://lh3.googleusercontent.com/d/1wOekfDA-3Qte4I7-TZ_msaLiZC7gQi-5",
+ "clubs-4|米酒":"https://lh3.googleusercontent.com/d/11YS_GEVOT7pggLDshMWADYWdlWDBOdHK",
+ "clubs-6|豬肉":"https://lh3.googleusercontent.com/d/1yzh-pqWbJO25JkRPW-KnDmoppxkCZNft",
+ "clubs-6|魷魚乾":"https://lh3.googleusercontent.com/d/1Gmog1Fbp_zckkR9pXtRssLQ8V-Dbg-CT",
+ "clubs-6|豆干":"https://lh3.googleusercontent.com/d/1RgG7kjfSwb6UmWKJ3hzLiD7M4kbXfQ1k",
+ "clubs-6|芹菜":"https://lh3.googleusercontent.com/d/1UuNTNA_FmjdFUHTRdFlfItxMEYt_57FR",
+ "clubs-6|蒜頭":"https://lh3.googleusercontent.com/d/1BhNsT-5XdxR0cHRtvpObYGCRie5PPYGf",
+ "clubs-6|醬油":"https://lh3.googleusercontent.com/d/116LOmxEG2O1Tu9FELG4H-zA9V74_I8cR",
+ "clubs-1|在來米粉":"https://lh3.googleusercontent.com/d/1yV9DaP4U4ENLw5kDcCC3kewgeEcf8a2O",
+ "clubs-1|水":"https://lh3.googleusercontent.com/d/1FK79PnyCgW3qYBr7SWAVDrkjV9ErnfiY",
+ "clubs-1|地瓜粉":"https://lh3.googleusercontent.com/d/185EQrWzqX23r6xik4zRkVIkaWuRAIacy",
+ "clubs-1|韭菜":"https://lh3.googleusercontent.com/d/1w5iP_pBLdc1zs0Ew-wZvcARY_vuvGJEU",
+ "clubs-1|豆芽菜":"https://lh3.googleusercontent.com/d/1qsv5vpJli7KkGt9Evtyc159Ay_ZL7S6c",
+ "clubs-1|肉燥":"https://lh3.googleusercontent.com/d/192xNELIYcYhUfdtmlvvegDRrmhh-L7i-",
+ "clubs-1|油蔥酥":"https://lh3.googleusercontent.com/d/1mQBG1G8JmIz9TEl_oxSFIvoSJypzKO9x",
+ "clubs-1|高湯":"https://lh3.googleusercontent.com/d/1Gyk1EI2SeTQWtBv1Haw0nxyRMNXNbjIV",
+ "clubs-10|糯米粉":"https://lh3.googleusercontent.com/d/1LIWbWEhvRkRGoEj_T_6q1pYyrSYHe5nB",
+ "clubs-10|水":"https://lh3.googleusercontent.com/d/1zsGzoIyyGpcHZGgOQg6kcij7GEpeqIXp",
+ "clubs-10|黑糖":"https://lh3.googleusercontent.com/d/1u_IiAAW80C3mTPSkDZN7geXEgRVqzyri",
+ "clubs-10|薑汁":"https://lh3.googleusercontent.com/d/1LrrY0C-V8hH0_P1j0nqr3oXwbSciakHo",
+ "clubs-10|花生粉":"https://lh3.googleusercontent.com/d/1HFqaWvloBR6AusIf2CRTKhod8DccZpDA",
+ "clubs-10|芝麻":"https://lh3.googleusercontent.com/d/18ywxxfueo0idLSBo0tHVbT-8Z612xOA6",
+ "clubs-3|在來米粉":"https://lh3.googleusercontent.com/d/1DJHDvpKC89C3MEMVbpX8vdD6BVq7gj1z",
+ "clubs-3|地瓜粉":"https://lh3.googleusercontent.com/d/16KXxjvatEhc0hSJak12b7x63OdN0Wzq4",
+ "clubs-3|糯米粉":"https://lh3.googleusercontent.com/d/1v93asHUPn3zODds-fCTtmVJb37tvY-rH",
+ "clubs-3|水":"https://lh3.googleusercontent.com/d/1YvFL2_bFxD7owJwBh1-i12rbP1vtqbtU",
+ "clubs-3|黑糖":"https://lh3.googleusercontent.com/d/1sHBpyqN2xpSuBFgEJw33LECTvc85nQXg",
+ "clubs-3|二砂糖":"https://lh3.googleusercontent.com/d/19N723ldhiRNiJJpeTh425QMdRfUZjoU9",
+ "diamonds-10|印度長米":"https://lh3.googleusercontent.com/d/1WcX4WSs6SbacZ5xc2bQ8ez8nIB5VQ0-G",
+ "diamonds-10|洋蔥":"https://lh3.googleusercontent.com/d/1Q-4RFDcp6q9KcZ3AYGHWRrwpfbp4zNyt",
+ "diamonds-10|紅蔥頭":"https://lh3.googleusercontent.com/d/1hKwFoFDQopdQXtayugBSG9d_O4NxMID9",
+ "diamonds-10|大蒜":"https://lh3.googleusercontent.com/d/1KTp1AFltVry1ivFfdZYvuKVWUmvPmCaA",
+ "diamonds-10|香茅":"https://lh3.googleusercontent.com/d/10fWCewkgECPtVvkh3WY-2QWG68zDKCq_",
+ "diamonds-10|薑黃粉":"https://lh3.googleusercontent.com/d/13o47VcX80G_meeVvfu94KwmyY1SELMi0",
+ "diamonds-10|黑胡椒":"https://lh3.googleusercontent.com/d/1z74csequJmFLzphameQbv9OeQn8jTIow",
+ "diamonds-10|月桂葉":"https://lh3.googleusercontent.com/d/1vJ4kw8XTCgmiNLd_PPDSafaAxJ-9rXcl",
+ "diamonds-10|雞高湯":"https://lh3.googleusercontent.com/d/11vH0SyE1K6QmrAg3rw500lLLJXpQemxw",
+ "diamonds-10|椰奶":"https://lh3.googleusercontent.com/d/1O_F04lFKpYhT7unyAgKYXoYNy2A7CvBR",
+ "diamonds-10|鹽":"https://lh3.googleusercontent.com/d/1bcUY6Kz9BCiKorpXYKaG3k-mOsSfX-Mn",
+ "diamonds-10|糖":"https://lh3.googleusercontent.com/d/1ZbuzmmqdoSRyrhhgd9xHUPTNAECcEf-j",
+ "diamonds-9|帶骨豬排":"https://lh3.googleusercontent.com/d/1MosAYr9gJ4Zw2rUmXxbK3flfKgZSRY3k",
+ "diamonds-9|香茅":"https://lh3.googleusercontent.com/d/1KdTXyh9FlU90C6i-Erb1rosoAIzh-K98",
+ "diamonds-9|蒜頭":"https://lh3.googleusercontent.com/d/11euRkjemjnB_ghTCiV1afYQ8BmI5dkO3",
+ "diamonds-9|紅蔥頭":"https://lh3.googleusercontent.com/d/1uc4KTxWHbJEH4OKOn73j5jQfxSA9koAT",
+ "diamonds-9|辣椒":"https://lh3.googleusercontent.com/d/1BRoHxYMVkM8kEXQLEB9quE20_v8RENBg",
+ "diamonds-9|蔥":"https://lh3.googleusercontent.com/d/1jGZdOlR2IgQiaGHKPyI2F6TsLxNBOgEs",
+ "diamonds-9|魚露":"https://lh3.googleusercontent.com/d/1swp8pWneKkdR8q9Aboeq8JtKJ1ZAVomE",
+ "diamonds-9|醬油":"https://lh3.googleusercontent.com/d/1DcNvyBUhYs4W6ybtZukjko76Q1EDH9HA",
+ "diamonds-9|鹽":"https://lh3.googleusercontent.com/d/1wPljECLsanIyV9cETc7duGPBo7UdipCu",
+ "diamonds-9|糖":"https://lh3.googleusercontent.com/d/1fxmH5F7wdyCzWwCPKsAY8DZ1rTJsGe0r",
+ "diamonds-9|蜂蜜":"https://lh3.googleusercontent.com/d/1MWv72OzU8AB59u5DS337KipBuo2DhXzR",
+ "diamonds-9|白胡椒粉":"https://lh3.googleusercontent.com/d/1iEOAg4YeZqowY0yAxebEQj-OcNWYEgMT",
+ "diamonds-9|五香粉":"https://lh3.googleusercontent.com/d/1FaTA5iMoFRlb31CMBTfIy-omGNMnrp4B",
+ "diamonds-9|檸檬汁":"https://lh3.googleusercontent.com/d/1M9lidtnpYTkLgpNR0RMXv-NAfAqgPyrg",
+ "diamonds-9|大黃瓜":"https://lh3.googleusercontent.com/d/1P4BM3U7swWsD4pIAUXy8SGgBERakvXXs",
+ "diamonds-9|蘿蔔":"https://lh3.googleusercontent.com/d/1QntoDvS7e-D_cRa8f6MAG3rqjmZYrITa",
+ "diamonds-9|白醋":"https://lh3.googleusercontent.com/d/1HjKtVth00_wztelILIn7w0Cb-UCaxPX_",
+ "diamonds-9|番茄":"https://lh3.googleusercontent.com/d/1qX4w-pCekYLymCmfjArHUJkzsH1Rwgka",
+ "diamonds-9|生菜":"https://lh3.googleusercontent.com/d/1ln-69YJh4lz8nZpH0UkF_LCcb7b1egrz",
+ "diamonds-9|泰國茉莉香米":"https://lh3.googleusercontent.com/d/1f4Orlnj306gF2IaVlk0b-7yf787MHqNm",
+ "diamonds-9|雞蛋":"https://lh3.googleusercontent.com/d/1E_exWSAwtSTUyU4mjAGFET2h9tPn8vy9",
+ "diamonds-8|牛肋條":"https://lh3.googleusercontent.com/d/15YU1uLSkOVTLooDzVYxi9ncucuXHTyVH",
+ "diamonds-8|紅蔥頭":"https://lh3.googleusercontent.com/d/13BIF9jPymv31e0qgL3LmbeRjQITviTnH",
+ "diamonds-8|蒜頭":"https://lh3.googleusercontent.com/d/1FYu5b-StQCqLJsmACHyT44_3qfCSuB1l",
+ "diamonds-8|老薑":"https://lh3.googleusercontent.com/d/1KkNYz9IqP2HGJWuaabpeDhGYYdfMG-O6",
+ "diamonds-8|南薑":"https://lh3.googleusercontent.com/d/1www-ebno67A5m6_rNgK1fHpWqqUUbm7L",
+ "diamonds-8|辣椒":"https://lh3.googleusercontent.com/d/1KeKt-sK1NYGBOhVy1RMGPCvrMGBYNs0l",
+ "diamonds-8|香茅":"https://lh3.googleusercontent.com/d/16iTth4mbxgxkSCbP2cjJYUxQ77j0WaZB",
+ "diamonds-8|肉桂":"https://lh3.googleusercontent.com/d/1fO9qJQ6MMjSgHvrq1EggVaLkFKVf8Sze",
+ "diamonds-8|八角":"https://lh3.googleusercontent.com/d/1-Urkjbl2wjiwdwxuEQC5beETBI4dgWmE",
+ "diamonds-8|薑黃粉":"https://lh3.googleusercontent.com/d/1tdRLtaSqOO04GIkLydoBR1Ofj0eBt2ih",
+ "diamonds-8|羅望子醬":"https://lh3.googleusercontent.com/d/1MTqBSiwjBV7osN-1y5ILyzWMsZzq8xc1",
+ "diamonds-8|糖":"https://lh3.googleusercontent.com/d/1SdiO8a8a_HMuJWgBTF-FhnEjOMMT3ju1",
+ "diamonds-8|鹽":"https://lh3.googleusercontent.com/d/1ovYNO3Sc7jtOl-oP3JJHsxItv_DtA2rI",
+ "diamonds-8|椰漿":"https://lh3.googleusercontent.com/d/1q1AOTmb7WuiNCugc0m020lTNRGfFCRvy",
+ "diamonds-7|米線":"https://lh3.googleusercontent.com/d/19PiSCvFB-q3Gt0Rq7pRvlcrEjFP0H4vb",
+ "diamonds-7|豬肉":"https://lh3.googleusercontent.com/d/1AkuP_z9qXTk8NSMqrRfnCEnXhdC7AmYi",
+ "diamonds-7|小黃瓜":"https://lh3.googleusercontent.com/d/14poAEzLtoi9exIXDNa-H4LTpndQ1YHHL",
+ "diamonds-7|紅蘿蔔":"https://lh3.googleusercontent.com/d/1WXh8YxqzzcVrjqUWrxcck_SI_kOSKT77",
+ "diamonds-7|洋蔥":"https://lh3.googleusercontent.com/d/18YAxKvtEoB438lbSKAQt5DXS4eJ8K0sy",
+ "diamonds-7|美生菜絲":"https://lh3.googleusercontent.com/d/1Y68mwv_6oiHDGnvUDIMmwcW-lq57aC-o",
+ "diamonds-7|豆芽菜":"https://lh3.googleusercontent.com/d/1RdmBWZOhUrU9WwOQfyPKbxiBsDS2ElYY",
+ "diamonds-7|大蒜":"https://lh3.googleusercontent.com/d/1KOL7sVEoCv0V7KLC-m6Kd5a41rkpkwZc",
+ "diamonds-7|辣椒":"https://lh3.googleusercontent.com/d/1Ry09Oj3BOPGneZt-AFbUaSBfa8t0Dp2f",
+ "diamonds-7|香菜":"https://lh3.googleusercontent.com/d/1u-ZlpUQ1DPFZMWLX_Wo84DTGjwLwA0Nx",
+ "diamonds-7|九層塔":"https://lh3.googleusercontent.com/d/1GtbHbzJQRe10z0MqpNo_X6Ske-gcMArM",
+ "diamonds-7|花生":"https://lh3.googleusercontent.com/d/1ZUefvfMTpc11QbAW-ta340M0o_oQ0ju8",
+ "diamonds-7|魚露":"https://lh3.googleusercontent.com/d/15V2jsGsnjskdf4WFjMMEvrvwobcga7Y2",
+ "diamonds-7|鹽":"https://lh3.googleusercontent.com/d/1teCrO9bsFbXOE7AvTxDjQKFUaX-BJxhF",
+ "diamonds-7|糖":"https://lh3.googleusercontent.com/d/1tzkN73yAt2OgWkGqkFxcCOaHcF5MlMcf",
+ "diamonds-6|香蕉":"https://lh3.googleusercontent.com/d/1flZiM5oUqjluRITUEOrvQXtxzG1QuqMg",
+ "diamonds-6|低筋麵粉":"https://lh3.googleusercontent.com/d/12v41OGZg93qGsfc7RYnwFGcF_JLS3OyB",
+ "diamonds-6|蛋黃":"https://lh3.googleusercontent.com/d/13VBUOZC2Ve_ulDi-AmaL2zwww3LXXZbw",
+ "diamonds-6|奶油":"https://lh3.googleusercontent.com/d/1aydlyceibkBB6N1wjbsom2qvb8q7Yv6e",
+ "diamonds-6|鹽":"https://lh3.googleusercontent.com/d/1kLWps3TnY5yjfprKdCyrmXUBXyGYInS2",
+ "diamonds-6|糖":"https://lh3.googleusercontent.com/d/1lHmP8ntwrGhBJRnZQ4a0EMhOTGONl-S_",
+ "diamonds-6|水":"https://lh3.googleusercontent.com/d/1DjxJLLu3PA4XQUx04fHaE1jhCnGdr08k",
+ "diamonds-6|沙拉油":"https://lh3.googleusercontent.com/d/17Gt_9jSzAbPeOAAr53RsyyQqYCI8-Q3H",
+ "diamonds-5|青木瓜":"https://lh3.googleusercontent.com/d/1ovBi3_Vo4ZbrwKiGK18hyEU2zpcIEn0-",
+ "diamonds-5|鹽":"https://lh3.googleusercontent.com/d/1gWd5-2UhRlqGQ3WB9rZ0WdIt1D1flzWj",
+ "diamonds-5|紅蘿蔔絲":"https://lh3.googleusercontent.com/d/12BjuInLugs2WKO7BO13qJHOEakgPnOBG",
+ "diamonds-5|蒜頭":"https://lh3.googleusercontent.com/d/1UEJSz0gCZdGdBO3YE9TXOHKEoW8GEAPa",
+ "diamonds-5|辣椒":"https://lh3.googleusercontent.com/d/1LLFWJPRudnGSHjkqqXE9xDlqHBD-6PnA",
+ "diamonds-5|魚露":"https://lh3.googleusercontent.com/d/1gYTU6l2stKWLM1CXaRGMNaRyoSCrmOVm",
+ "diamonds-5|檸檬汁":"https://lh3.googleusercontent.com/d/1aK97b2NoaTrzqGSdYYUJlDurPk34soaN",
+ "diamonds-5|椰糖":"https://lh3.googleusercontent.com/d/19xhtpPj7N-8Qt44C1hezil2EfX4GM9Za",
+ "diamonds-5|小番茄":"https://lh3.googleusercontent.com/d/1c76GeB8bBI_Y1cpt48_3OyCbi7BxZPZo",
+ "diamonds-5|菜豆":"https://lh3.googleusercontent.com/d/1R2fA89nce_V4ydT_NZg3q1WwsxFrCqRN",
+ "diamonds-5|香菜":"https://lh3.googleusercontent.com/d/1uSczKk1XBTMDTyxs_EvLNJQvQCzvb_UF",
+ "diamonds-5|花生":"https://lh3.googleusercontent.com/d/1ftc7H3QK40Psg_m-AgxzngXioFkWCFXY",
+ "diamonds-5|水":"https://lh3.googleusercontent.com/d/182y52XeS4EfZJA49H8TYCKgLR-pRJ5j9",
+ "diamonds-4|米線":"https://lh3.googleusercontent.com/d/1D5C0jvlxepFupxlpfckBkrUMCCqrlDlk",
+ "diamonds-4|蝦子":"https://lh3.googleusercontent.com/d/1ZpAMbABSLaVAFEc9HuvRxxJUzwqhhJsL",
+ "diamonds-4|豬肉":"https://lh3.googleusercontent.com/d/1W7uZp7l7G22l1YGAQ-tyeWA-Zq3OnlCI",
+ "diamonds-4|米紙":"https://lh3.googleusercontent.com/d/1z_21nrHVxQQHW7CR9rUPDyrL-tSp96Ij",
+ "diamonds-4|生菜":"https://lh3.googleusercontent.com/d/1i-FHZIQhJMqoE9gzXU6qBcpnxp-_UdGt",
+ "diamonds-4|九層塔":"https://lh3.googleusercontent.com/d/1tsLE7ocfGbJwCZDn3oUhRGEm60quNM8B",
+ "diamonds-4|薄荷葉":"https://lh3.googleusercontent.com/d/1UQ5JFa8rpeZOoGzOuyBf4I-gsVO8Is6k",
+ "diamonds-4|小黃瓜":"https://lh3.googleusercontent.com/d/1ydfAe1JOHyFaB1_rtLki4Zfxh5S4pD7_",
+ "diamonds-4|紅蘿蔔":"https://lh3.googleusercontent.com/d/1-SB6QjArLmf-Bc2TpA8Ek34bRSl2d549",
+ "diamonds-4|香菜":"https://lh3.googleusercontent.com/d/1EMbBULDjh6lVshiuHdP0QniZTIJ6mEoV",
+ "diamonds-4|魚露":"https://lh3.googleusercontent.com/d/1dNbpdkwi_Wujqo697gdywFp76OGGhm4O",
+ "diamonds-3|白飯":"https://lh3.googleusercontent.com/d/161a-N47AYCMnQfOr3pFHbsxXfkYH7pVj",
+ "diamonds-3|沙嗲醬":"https://lh3.googleusercontent.com/d/1c7ZD12fBpq_TxBBmS89nUHHIr7eEurZb",
+ "diamonds-3|紅蔥酥":"https://lh3.googleusercontent.com/d/1xA4JaS-HwONni7XX9bLxhuxA7VzBAgUr",
+ "diamonds-3|參巴醬":"https://lh3.googleusercontent.com/d/1xr1VJ0kLUpkMTnKhRXzHl1W_GdIiAnOp",
+ "diamonds-3|蔥花":"https://lh3.googleusercontent.com/d/11_4d3DumY9FrnLHWVOfuXOiw46zWtk7l",
+ "diamonds-3|雞蛋":"https://lh3.googleusercontent.com/d/1L5kgwRy8z28w5fQ6bg0msKNEsE2wlAyb",
+ "diamonds-3|鹽":"https://lh3.googleusercontent.com/d/1bRjJQWlps3JJPQaBhodu-FnM5cV9uuCd",
+ "diamonds-3|雞肉/蔬菜/海鮮":"https://lh3.googleusercontent.com/d/1GMaigzogzzUtxsAxUU4905lNvuRtvHKC",
+ "diamonds-2|牛肉":"https://lh3.googleusercontent.com/d/1m27mRqLXR_6KMwND1MNjmPB6BC4yuvh-",
+ "diamonds-2|洋蔥":"https://lh3.googleusercontent.com/d/1J7RDBrIhgdf3W80lQzN7AxjOmqzH3uB5",
+ "diamonds-2|大蒜":"https://lh3.googleusercontent.com/d/1zjTEaPXLacm3wtKSn6LoFQoh3PfS_jMh",
+ "diamonds-2|糖":"https://lh3.googleusercontent.com/d/1fUvFF_h2YeGZBRmBejajfc7XMlwmGxD1",
+ "diamonds-2|鹽":"https://lh3.googleusercontent.com/d/1avd0uJDhr-jmkV5cVKl-OGBEo7exBI1y",
+ "diamonds-2|河粉":"https://lh3.googleusercontent.com/d/1uEyYm5bD4r_OUEOS7bwG4tcrXOSewoT2",
+ "diamonds-2|檸檬汁":"https://lh3.googleusercontent.com/d/1L8pTcXveabn4oWusWnRk8Mt6w0S6nahC",
+ "diamonds-2|豆芽菜":"https://lh3.googleusercontent.com/d/1vqHtz2fsl7RTcfHuMEzp7caFWhmlYE-1",
+ "diamonds-2|九層塔":"https://lh3.googleusercontent.com/d/1d550uxrMx5s-TPy6U37Q58TMXu90NBNX",
+ "diamonds-2|薄荷":"https://lh3.googleusercontent.com/d/1TixGgNngFUoubv1ropkTYul4akh_1LVS",
+ "diamonds-2|水":"https://lh3.googleusercontent.com/d/1iW0K7G0yIuhbgAtJPkIaMpfICmJu_1wO",
+ "diamonds-1|法國麵包":"https://lh3.googleusercontent.com/d/1GVC9D7Z5YYS_Y-Y-hC-RjGLI09b3dZWA",
+ "diamonds-1|豬肝醬":"https://lh3.googleusercontent.com/d/15dKfgHpHdmD-Bbn6Ybt4PEG88wOJCsIy",
+ "diamonds-1|豬肉":"https://lh3.googleusercontent.com/d/1nqO-bJZAnTDicnCep3XdDrP6YgKSmL9v",
+ "diamonds-1|越南火腿":"https://lh3.googleusercontent.com/d/1Z2_sPs4d3ipuKkOgZhq-vblc8p8_sT1D",
+ "diamonds-1|醃蘿蔔":"https://lh3.googleusercontent.com/d/1gfMmU_2ln6o_LQOcF10JfpFq96-pfMVX",
+ "diamonds-1|香菜":"https://lh3.googleusercontent.com/d/1HIYcSBQQ3yj9N1oVLuVephwe_iaTyZSH",
+ "diamonds-1|生菜":"https://lh3.googleusercontent.com/d/1TYkefMvULTDX4M-kM75Utmi18X9ldXxY",
+ "diamonds-1|魚露":"https://lh3.googleusercontent.com/d/1GAJJLb3Nf4zQvnKh0J26cHspZ7pcLym7",
+ "hearts-6|香菜":"https://lh3.googleusercontent.com/d/13NNGrwvmOBrqSVzjj4o7PfLP97eUA9Hb",
+ "hearts-6|高麗菜":"https://lh3.googleusercontent.com/d/1uAMG-ulnbcUBGcizTHbwjWEqh72_Atzw",
+ "hearts-6|蛋皮":"https://lh3.googleusercontent.com/d/1iLIR2JG42o7gjHmmlJmjbRALFqVwq78o",
+ "hearts-6|豬肉絲":"https://lh3.googleusercontent.com/d/14J9m3dzt1T6md8XDDKe-M32YA8odsXRt",
+ "hearts-6|潤餅皮":"https://lh3.googleusercontent.com/d/1rtPUjBWtOi_JhaW9T_pqbwsDzsD3gNy8",
+ "hearts-6|豆干":"https://lh3.googleusercontent.com/d/1J2n6ZwEOXdzGayivjYKdTB55aqUaD-sb",
+ "hearts-6|豆芽菜":"https://lh3.googleusercontent.com/d/1T5OdEBf_h0eYY7lVZXNahPpt7Gssx93p",
+ "hearts-6|花生粉":"https://lh3.googleusercontent.com/d/1nZpHzR-FZix_KMSUN6krkZ-aKQhJ_ITR",
+ "hearts-6|紅蘿蔔":"https://lh3.googleusercontent.com/d/1THEp17-166F3A5pIcmJb6xP-otUgvgk5",
+ "hearts-8|紅蔥頭":"https://lh3.googleusercontent.com/d/1hB2JkgXZ0YwPhdnDm4mFyOrO2i6XAtfh",
+ "hearts-8|蒜頭":"https://lh3.googleusercontent.com/d/1mjdJhJ_wU9X0uYCb_0m6w5TEnpmeJkBD",
+ "hearts-8|豬絞肉":"https://lh3.googleusercontent.com/d/17t3YaNzPyPhcRv0EKz1l3UwMoLLIteYz",
+ "hearts-8|醬油":"https://lh3.googleusercontent.com/d/1tIsB4hnaPiwXHCkic6M9uZVI6ZipMi0B",
+ "hearts-8|白胡椒粉":"https://lh3.googleusercontent.com/d/1OTCM2BMbj50osdW8kJpXhuk7AYCz-y9e",
+ "hearts-8|白飯":"https://lh3.googleusercontent.com/d/1bxf3Aqhl557ir2ycGrDZbl7V99NTYTB7",
+ "hearts-8|冰糖":"https://lh3.googleusercontent.com/d/1Sv1aPSppOUI4rxOV246bv4t3Ah1i2kuT",
+ "hearts-8|米酒":"https://lh3.googleusercontent.com/d/1K0HWcW4iLB4QyNS7MskVF5dPRLfdbzY6",
+ "hearts-3|生臭豆腐":"https://lh3.googleusercontent.com/d/1NzfPrLiRPOgMLdOWLXJw6v8bOLB8g9Cf",
+ "hearts-3|泡菜":"https://lh3.googleusercontent.com/d/1ZsQZABnn84t5dbhtuEEipbSSii1rDyy9",
+ "hearts-3|香菜":"https://lh3.googleusercontent.com/d/1gGQDVAp9x8g-O8MqDfkRV9pehte6rlnM",
+ "hearts-3|蒜泥":"https://lh3.googleusercontent.com/d/1CmItNHKI6PuDrmjgRxWBsx5ZSZCPkE9C",
+ "hearts-3|醬油膏":"https://lh3.googleusercontent.com/d/1Lc8x5RnLsirayM-TarRDMUCbhEKPUVeu",
+ "hearts-3|食用油":"https://lh3.googleusercontent.com/d/15eAMBXkAaGms4yADlWJSdty6whmDj_6I",
+ "hearts-10|蒜頭":"https://lh3.googleusercontent.com/d/1FJNmxwiSBlUGby5raj0YR8sPLRnWO8XT",
+ "hearts-10|蔥":"https://lh3.googleusercontent.com/d/16r6ZgZZ0UYumz7spMGveXA4MMqnxg5Qb",
+ "hearts-10|薑":"https://lh3.googleusercontent.com/d/1JlQVuFPk4yALsSeCjiRiKQOe1Xgi9rr-",
+ "hearts-10|醬油":"https://lh3.googleusercontent.com/d/16di_o77Bgxxp0caFMRqVIFa8qX2vQg2S",
+ "hearts-10|八角":"https://lh3.googleusercontent.com/d/121Di7KJtGo0Ewu9bOpqq2r8Q7pu2l88M",
+ "hearts-10|五花肉":"https://lh3.googleusercontent.com/d/1RofjY8PBLRx0NcGMha9SIHqQML3owbGT",
+ "hearts-10|水":"https://lh3.googleusercontent.com/d/1f8lSEhBgeNTIORBdobWD-fae9GI4yVGM",
+ "hearts-10|冰糖":"https://lh3.googleusercontent.com/d/16508PHBTT7xK9_xGeGEtodeQhS2V4yrd",
+ "hearts-10|米酒":"https://lh3.googleusercontent.com/d/1rd7RFRIniv1VNOBucBSA4G0DlmAVzv0n",
+ "hearts-9|虱目魚":"https://lh3.googleusercontent.com/d/1QBKa8BO-FRPF3te-qDb9KbEWPynDH8ma",
+ "hearts-9|蔥":"https://lh3.googleusercontent.com/d/1CKLV8mTXr933Pr1bPfoZSBB93JBRSxVG",
+ "hearts-9|薑絲":"https://lh3.googleusercontent.com/d/17GTXr1wkhFxe4mJAnEenHE2arYLezTYn",
+ "hearts-9|鹽":"https://lh3.googleusercontent.com/d/1r_2uA9BHeopkkLi-nNtC4O7mXtEGaH1i",
+ "hearts-9|水":"https://lh3.googleusercontent.com/d/1LfimXZfD2uXXvBP4QBwgVN4yyZvlvABv",
+ "hearts-9|白胡椒粉":"https://lh3.googleusercontent.com/d/1EyposXj-Do6l_p9m2oQifPeWJ9xYaxnD",
+ "hearts-9|米酒":"https://lh3.googleusercontent.com/d/1AH9Auj-N_n3CXsv39H9KQp8JyPdn-33E",
+ "hearts-9|芹菜":"https://lh3.googleusercontent.com/d/1veVeM86wFv57TfkT9sr_3CDm3m4LOeDL",
+ "hearts-7|金鉤蝦米":"https://lh3.googleusercontent.com/d/1J7YEsI4Zy-hrTNHEcSQw-YOCTXRG6rC6",
+ "hearts-7|豬皮":"https://lh3.googleusercontent.com/d/1fpPo9bK31pQQ--QJmlnW7-rjXqg1m5m6",
+ "hearts-7|雞腳":"https://lh3.googleusercontent.com/d/16STLvz2hFswz4fYHE3iT1e5UA0BNWEqK",
+ "hearts-7|乾香菇":"https://lh3.googleusercontent.com/d/1exa4r4jEdEQU9wDwEntDsqtEfIqVhWT5",
+ "hearts-7|排骨":"https://lh3.googleusercontent.com/d/1uEa7oWA5Lfjf32rUmFtHv-RrdLUm1rgd",
+ "hearts-7|魚皮":"https://lh3.googleusercontent.com/d/161BYj_kpepBj499vi9dHxDS-R_H00Ydy",
+ "hearts-7|鳥蛋":"https://lh3.googleusercontent.com/d/1JzvWbfxAnSty0jKGw5OgK0lbx2_i2qXE",
+ "hearts-7|大白菜":"https://lh3.googleusercontent.com/d/1kUYnv3k81hbkqVoxNlXguEDtWXPCMeqH",
+ "hearts-7|大骨湯":"https://lh3.googleusercontent.com/d/10GbZ4oO3oXJxrDIFTxe6QG2-1OoF3rmb",
+ "hearts-7|干貝":"https://lh3.googleusercontent.com/d/1d4GRARsPIvQfShbNcdNogGyqqXlNr8Pz",
+ "hearts-7|扁魚":"https://lh3.googleusercontent.com/d/1lTqFF3cDDfn2MvFOWfgY9aubSeO_tZ9j",
+ "hearts-1|糯米":"https://lh3.googleusercontent.com/d/1ICsN4KTjMG3Jdd-i8ayCQlzXuo5zkQeA",
+ "hearts-1|花生":"https://lh3.googleusercontent.com/d/1Wct_SZubUh419p6enIS9vhz_e9u3AeRb",
+ "hearts-1|香菇":"https://lh3.googleusercontent.com/d/1YcnN85aDWHltnfJzp-xodhgPMsz3w7eg",
+ "hearts-1|蝦米":"https://lh3.googleusercontent.com/d/1Pa04NOWJU4hC7dl6Qwh-_UuEhgr452F9",
+ "hearts-1|栗子":"https://lh3.googleusercontent.com/d/1bpkXNJtmiS4_c3JumWK4eSsKPJCboX4q",
+ "hearts-1|鹹蛋黃":"https://lh3.googleusercontent.com/d/1EZKHQOXK3k-Q5V3_bYS3oYBPTaxlTD0d",
+ "hearts-1|豬肉":"https://lh3.googleusercontent.com/d/1rpCR83sydaJsXb9ByMKuV_H3kAlU3gEn",
+ "hearts-1|竹葉":"https://lh3.googleusercontent.com/d/1RuUHkObXT0JBOtJPmb-fTk7zmTb3rJbR",
+ "hearts-1|麻繩":"https://lh3.googleusercontent.com/d/1xpkLccUzFWMZFsXJlvsTlxLGc86g3Pvb",
+ "hearts-1|棉繩":"https://lh3.googleusercontent.com/d/1xpkLccUzFWMZFsXJlvsTlxLGc86g3Pvb",
+ "hearts-5|糯米粉":"https://lh3.googleusercontent.com/d/1QniIFHdxje9RDKiEcVKIx6OT3fp08hxj",
+ "hearts-5|白砂糖":"https://lh3.googleusercontent.com/d/1IFx3QPRsu87bR0hX2vh-mwpIAku02knJ",
+ "hearts-5|水":"https://lh3.googleusercontent.com/d/16IEjlj-U1g6huu3lRkdDbwfN4em7YqIS",
+ "hearts-5|食用油":"https://lh3.googleusercontent.com/d/1uhKe5emEutdwdqIbQmGr-8YIoFGrJpyz",
+ "hearts-5|花生糖粉":"https://lh3.googleusercontent.com/d/1RFQ7u7YcTQRG6uvuzdYVUwwDzjjJtmlJ",
+ "hearts-2|刈包麵皮":"https://lh3.googleusercontent.com/d/1Ne2xeIHnYtCChd0dnrQ2G51PiWtgDvh7",
+ "hearts-2|滷五花豬":"https://lh3.googleusercontent.com/d/1cdlVeX6ALzG9F7uQAkJUWud9xJZpGDlc",
+ "hearts-2|酸菜":"https://lh3.googleusercontent.com/d/1mLiMmhAmuxpO68lJfxeEYlYSPmLa9Ti9",
+ "hearts-2|花生粉":"https://lh3.googleusercontent.com/d/16pLG3egsredbfzOqLjJHGawr4fOFdkiu",
+ "hearts-2|香菜":"https://lh3.googleusercontent.com/d/1T__nMNWj7o6gHM2QeGD8pZ-0IjLYRJho",
+ "hearts-4|麵線":"https://lh3.googleusercontent.com/d/19h_I8U5uzzFjAiFc_p6er3SmqCpkaEg-",
+ "hearts-4|豬大腸":"https://lh3.googleusercontent.com/d/1NegqjiEQyKZFoD_EnPxxi18zRSEdHoe4",
+ "hearts-4|香菜":"https://lh3.googleusercontent.com/d/14TJlQMDwaAvWErsISCsJx-u38LmU6Jyh",
+ "hearts-4|蒜泥":"https://lh3.googleusercontent.com/d/1TWpt75l36weUHK2VN8zSkJkLOe6W1fCv",
+ "hearts-4|柴魚高湯":"https://lh3.googleusercontent.com/d/17PndGQUx7WuS3rnas17ra7TnnWcVJKBY",
+ "hearts-4|太白粉水":"https://lh3.googleusercontent.com/d/1pC50Vl2YMOOvWwVQWJn9AmuWXqK6Pnv0",
+ "spades-5|木鱉子":"https://lh3.googleusercontent.com/d/1WwjSEkjWSWKXaMrZnYa2ChBZQ-NnnWnK",
+ "spades-5|豆瓣菜":"https://lh3.googleusercontent.com/d/1TsJ4Lcx-_fnOh1Mpwumto3j-QNfIZBXH",
+ "spades-5|山萵苣":"https://lh3.googleusercontent.com/d/1vRjFgGwQkUiqg2jqDmwuTtBk2etSS5_M",
+ "spades-5|黃藤":"https://lh3.googleusercontent.com/d/1kdKHXjNjO2ZSWsdZhrZ74xdoQuQmc3Bj",
+ "spades-5|過貓":"https://lh3.googleusercontent.com/d/1djbf6QpSyx-QkW5pBu-Ab-7fD3sfHf0a",
+ "spades-5|水":"https://lh3.googleusercontent.com/d/11MCxcc9RDbwhO6FJmyTDToSHJi2Box-n",
+ "spades-10|蘭嶼水芋":"https://lh3.googleusercontent.com/d/16VROoreEYrsMfOWuoDJ2sQey4EYc7sXk",
+ "spades-10|五花肉":"https://lh3.googleusercontent.com/d/1ggSdxeYWN1X1RTPorDdpZJ4bho1BNI8U",
+ "spades-10|豬油":"https://lh3.googleusercontent.com/d/10c8w4NH0D2kf8csHV5FjiIgMnhBn6aOl",
+ "spades-10|鹽":"https://lh3.googleusercontent.com/d/1ah69oEZqVNsvNjDu7M0yXQPtrXDp-YWU",
+ "spades-10|水":"https://lh3.googleusercontent.com/d/1sC-wlizBo_b70OzxLsO3CcaX0xGNqZvV",
+ "浪花蟹":"https://lh3.googleusercontent.com/d/1HlJpoIugA06bexcAe1qziOcxy12r8RFe",
+ "蒜頭":"https://lh3.googleusercontent.com/d/1JgFXjKrV-xJrAcyJEY40OFfEf-mA987r",
+ "辣椒":"https://lh3.googleusercontent.com/d/1iZ6LTgjjMr29jvUuSRj2-DQVZaQtqhGk",
+ "蔥":"https://lh3.googleusercontent.com/d/1wd0NAxZl6bxHxFlGAQHR23ySeD31oeF6",
+ "spades-9|食用油":"https://lh3.googleusercontent.com/d/1DUUdgCAoyE4APLsQ6CildeaBQsCNXP-8",
+ "spades-9|薑":"https://lh3.googleusercontent.com/d/1S4N4AF3uI6gwRaKlWhbMjYa1ZdWcYWwL",
+ "spades-9|鹽":"https://lh3.googleusercontent.com/d/1hCOaK8d9Gil8pchY3bY8i_K057MRfTxu",
+ "spades-8|飛魚乾":"https://lh3.googleusercontent.com/d/1n04sd7W6dkG8dWcwGIl8nb3xU3RSSDhI",
+ "spades-8|海鹽":"https://lh3.googleusercontent.com/d/1wYiJ4ZYveWXUpQ_aQqnV6YQuVaRsJ9qw",
+ "spades-8|水":"https://lh3.googleusercontent.com/d/1xdRI-tK9VCgOYWaMUfXE6CjTgWF233hd",
+ "生薑":"https://lh3.googleusercontent.com/d/16PX3BjKz6z7CafIwwKzZ-_C21Io-NAoZ",
+ "米酒":"https://lh3.googleusercontent.com/d/1J2CLua6UnfKhdPNj2OlOrDsa1rYhAT0-",
+ "豬排骨":"https://lh3.googleusercontent.com/d/1jEUXNHT2nD_J5htZJgJyvXjfBSml7wCt",
+ "鹽":"https://lh3.googleusercontent.com/d/1j1EcT9gNjiijoecHygOd08YpiqMMmUn8",
+ "spades-7|水":"https://lh3.googleusercontent.com/d/18JDRF3lWkirdbuJH2bEzf0rKociUCco3",
+ "spades-7|樹豆":"https://lh3.googleusercontent.com/d/1FNskdTfNyWpOEGLQaaDeSUOJEMh4Wmrp",
+ "芋頭":"https://lh3.googleusercontent.com/d/1bA30CfoSNthWawtenMB3SYgTCXjRj1oj",
+ "山萵苣":"https://lh3.googleusercontent.com/d/1vRjFgGwQkUiqg2jqDmwuTtBk2etSS5_M",
+ "木鱉子":"https://lh3.googleusercontent.com/d/1WwjSEkjWSWKXaMrZnYa2ChBZQ-NnnWnK",
+ "水":"https://lh3.googleusercontent.com/d/11MCxcc9RDbwhO6FJmyTDToSHJi2Box-n",
+ "豆瓣菜":"https://lh3.googleusercontent.com/d/1TsJ4Lcx-_fnOh1Mpwumto3j-QNfIZBXH",
+ "黃藤":"https://lh3.googleusercontent.com/d/1kdKHXjNjO2ZSWsdZhrZ74xdoQuQmc3Bj",
+ "過貓":"https://lh3.googleusercontent.com/d/1djbf6QpSyx-QkW5pBu-Ab-7fD3sfHf0a",
+ "spades-4|小米":"https://lh3.googleusercontent.com/d/1KEWaExnTDNenOJ2E1ipuCbw8idfV_Lu7",
+ "spades-4|水":"https://lh3.googleusercontent.com/d/1PKrXFeDd7bLvGUQKogZjfkCjnZ6yzVG0",
+ "月桃葉":"https://lh3.googleusercontent.com/d/1K-2sKtkcwpCkMl0sGNUYF_zOwxqF6MIw",
+ "水":"https://lh3.googleusercontent.com/d/1xV5G7BDxje_NMEh5htJ9C1FBfCqaakxj",
+ "假酸漿葉":"https://lh3.googleusercontent.com/d/1OAUNyELPX97Hnc_wFf7d1jRWPQUiPrK8",
+ "麻繩":"https://lh3.googleusercontent.com/d/1xrXrT9xRI338MgkS04en9Zc6GbR1SgV5",
+ "樹豆":"https://lh3.googleusercontent.com/d/1u9aGhyddKFHxVJo3W-GFKjo_XrsCTUim",
+ "糯米粉":"https://lh3.googleusercontent.com/d/1aHmkNV7EMgfS77W0_QdNNjpTVWFAFm8n",
+ "鹹豬肉":"https://lh3.googleusercontent.com/d/1HR9ZUF7v0bz1BffkPN7VYZoSO6lh3GCB",
+ "小米":"https://lh3.googleusercontent.com/d/1FJKumdrUKtBa2PHA8lYhk7arIA_AB_Sv",
+ "山茼蒿":"https://lh3.googleusercontent.com/d/1YMBnZWB5_tuz2poF-vcFXtSg_qYPheLh",
+ "豆腐乳":"https://lh3.googleusercontent.com/d/1tNpR6-TiYFA1TiVeTGSI2gXHd3HZwYlb",
+ "紅藜":"https://lh3.googleusercontent.com/d/1kDUmYXJa6dhWk2tTbx1WYYEZA1vXkmUP",
+ "野莧菜":"https://lh3.googleusercontent.com/d/1h-3mjDoRk3aiMNusTJyPLm_hBG2-3LE3",
+ "龍葵":"https://lh3.googleusercontent.com/d/146iQNrbZeEnhuNclSJFc1F9YPkGayZHW",
+ "鹹魚":"https://lh3.googleusercontent.com/d/1JyI7WZlrGfG3hLXgdrFEx1n5Rkd503f9",
+ "粗鹽":"https://lh3.googleusercontent.com/d/142kng65mcTeeYVI3cViNeoIJsNKCQ94H",
+ "豬肉":"https://lh3.googleusercontent.com/d/1DvLP51Ct_kkOrKgZTK5qEAeNHFd4eIN3"
+};
+function splitIng(s){
+  const out=[];let cur='',dep=0;
+  for(const ch of s){
+    if(ch==='（'||ch==='(')dep++;
+    else if(ch==='）'||ch===')')dep--;
+    if(ch==='、'&&dep===0){out.push(cur);cur='';}else cur+=ch;
+  }
+  if(cur.trim())out.push(cur);
+  return out.map(x=>x.trim()).filter(Boolean);
+}
+function ingGrid(key,i){
+  const s=KIDING[key+'-'+(i+1)]||'';
+  const names=splitIng(s);
+  if(!names.length)return '<p>（待補）</p>';
+  return '<div class="inggrid">'+names.map(n=>{
+    const file=n.replace(/[（(][^）)]*[）)]/g,'').trim();
+    const u=INGIMG[key+'-'+(i+1)+'|'+file]||INGIMG[file]||('圖片/食材/'+file+'.png');
+    return '<div class="ingcard"><img class="ingph" src="'+u+'" alt="'+n+'" onerror="this.style.visibility=\'hidden\'"><div class="nm">'+ruby(n)+'</div></div>';
+  }).join('')+'</div>';
+}
+function toggleBox(which){
+  const body=document.getElementById(which==='food'?'foodBody':'scoreBody');
+  const btn=document.getElementById(which==='food'?'foodToggle':'scoreToggle');
+  const isHidden=(body.style.display==='none');
+  body.style.display=isHidden?'block':'none';
+  btn.innerHTML=isHidden?'▲ '+ruby('收起來'):'▼ '+ruby('打開');
+}
+let scores=[];
+function startScore(n){
+  if(n>30) n=30; if(n<1) n=1;
+  scores=[]; for(let i=0;i<n;i++) scores.push({name:'玩家'+(i+1),score:0});
+  renderScore(); speakPage(n+'人玩，開始計分！');
+}
+function startScoreCustom(isChild){
+  const el=document.getElementById(isChild?'customPlayers2':'customPlayers');
+  let n=parseInt(el?el.value:'',10);
+  if(!n||n<1) n=1; if(n>30) n=30;
+  if(el) el.value=n;
+  startScore(n);
+}
+function renderScore(){
+  const max=scores.length?Math.max.apply(null,scores.map(s=>s.score)):0;
+  const cel=document.getElementById('childScoreBoard');
+  if(cel){
+    if(!scores.length) cel.innerHTML='';
+    else cel.innerHTML='<div class="cscorewrap">'+scores.map((s,i)=>
+      '<div class="cscorecard'+(s.score>0&&s.score===max?' lead':'')+'">'
+      +'<input class="cname" value="'+s.name+'" onchange="scores['+i+'].name=this.value">'
+      +'<div class="cnum">'+s.score+'</div>'
+      +'<div class="sb"><button class="cplus" onclick="addScore('+i+',1)">＋1</button>'
+      +'<button class="cminus" onclick="addScore('+i+',-1)">－1</button></div></div>').join('')+'</div>'
+      +'<div class="row" style="margin-top:14px;justify-content:center;">'
+      +'<button class="btn white" onclick="resetScore()">🔄 重新開始</button></div>';
+  }
+  const el=document.getElementById('scoreBoard');
+  if(!el) return;
+  if(!scores.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="scorewrap">'+scores.map((s,i)=>
+    '<div class="scorecard'+(s.score>0&&s.score===max?' slead':'')+'">'
+    +'<input class="sname" value="'+s.name+'" onchange="scores['+i+'].name=this.value">'
+    +'<div class="sc">'+s.score+'</div>'
+    +'<div class="sb"><button class="splus" onclick="addScore('+i+',1)">＋1</button>'
+    +'<button class="sminus" onclick="addScore('+i+',-1)">－1</button></div></div>').join('')+'</div>'
+    +'<div class="row" style="margin-top:14px;justify-content:center;">'
+    +'<button class="btn white" onclick="resetScore()">🔄 全部歸零</button>'
+    +'<button class="btn white" onclick="clearScore()">關閉計分板</button></div>';
+}
+function addScore(i,d){ scores[i].score+=d; if(scores[i].score<0)scores[i].score=0; renderScore(); }
+function resetScore(){ scores.forEach(s=>s.score=0); renderScore(); }
+function clearScore(){ scores=[]; renderScore(); }
+function foodLabel(it){
+  const m=it.food.match(/^(.+?)（(.+?)）$/);
+  if(m) return ruby(m[1])+'<br><span style="font-size:0.8em;opacity:.9;">（'+ruby(m[2])+'）</span>';
+  return ruby(it.food);
+}
+function renderChild(){
+  document.getElementById('childTitle').innerHTML=ruby('你今天的心情是什麼呢？');
+  document.getElementById('childSub').innerHTML=ruby('點一點，聽一聽')+' 🎵';
+  document.getElementById('childAgain').innerHTML='🔊 '+ruby('再聽一次');
+  document.getElementById('emotionGrid').innerHTML=EMOTIONS.map(e=>`<div class="bigbtn ${e.c}" onclick="childTap('${e.key}')"><img class="bei" src="${e.img}" alt="${e.name}" onerror="this.outerHTML='<span class=&quot;be&quot;>${e.emoji}</span>'"><span class="bt">${ruby(e.name)}</span></div>`).join('');
+  document.getElementById('childFoodTitle').innerHTML=ruby('這是什麼食物呢？');
+  const st=document.getElementById('childScoreTitle'); if(st) st.innerHTML=ruby('誰得分最多？');
+  const ft=document.getElementById('foodToggle'); if(ft) ft.innerHTML='▲ '+ruby('收起來');
+  const sc=document.getElementById('scoreToggle'); if(sc) sc.innerHTML='▲ '+ruby('收起來');
+  document.getElementById('childSuitGrid').innerHTML=Object.keys(FOODS).map(k=>`<div class="bigbtn ${FOODS[k].cls}" onclick="childSuit('${k}')"><span class="be">${FOODS[k].icon}</span><span class="bt" style="font-size:19px;">${ruby(FOODS[k].name)}</span></div>`).join('');
+  document.getElementById('childFoodGrid').style.display='none';
+}
+function childSuit(key){
+  const s=FOODS[key];const g=document.getElementById('childFoodGrid');
+  g.style.display='grid';
+  g.innerHTML=s.items.map((it,i)=>`<div class="bigbtn ${s.cls}" onclick="childFood('${key}',${i})"><span class="bt" style="font-size:18px;margin-top:0;text-align:center;line-height:2.1;">${it.n}. ${foodLabel(it)}</span></div>`).join('');
+  g.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function childFood(key,i){
+  const s=FOODS[key];const it=s.items[i];
+  document.getElementById('popupbox').innerHTML=`<div class="pe">${s.icon}</div><h3>${it.food}</h3>
+    <img src="${foodImgPath(key,i)}" alt="${it.food}" style="width:100%;max-width:180px;border-radius:16px;display:block;margin:0 auto 14px;" onerror="this.style.display='none'">
+    <div class="sec"><span class="lbl">發音</span><p class="roman">${it.roman}</p></div>
+    <div class="sec"><span class="lbl blue">🧺 食材</span>${ingGrid(key,i)}</div>
+    <div class="popactions"><button class="btn blue" onclick="replay()">🔊 再聽一次</button><button class="btn" onclick="closePopup()">好，我懂了 👍</button></div>`;
+  document.getElementById('popup').classList.add('show');
+  sayFile('食物_'+it.food.replace(/[（(].*$/,''),it.food+'。食材有'+splitIng(KIDING[key+'-'+(i+1)]||'').join('、'));
+}
+function childTap(key){
+  const e=EMOTIONS.find(x=>x.key===key);
+  document.getElementById('popupbox').innerHTML=`<img class="pei" src="${e.img}" alt="${e.name}" onerror="this.outerHTML='<div class=&quot;pe&quot;>${e.emoji}</div>'"><h3>${ruby(e.name)}</h3>
+    <div class="sec"><p>${ruby(e.tip)}<br>${ruby(e.q)}</p></div>
+    <div class="popactions"><button class="btn blue" onclick="replay()">🔊 ${ruby('再聽一次')}</button><button class="btn" onclick="closePopup()">${ruby('好，我懂了')} 👍</button></div>`;
+  document.getElementById('popup').classList.add('show');
+  sayFile('情緒_'+e.name,e.name+'。'+e.tip+e.q);
+}
+
+/* 全站統一：蔥花→蔥、沙拉油→油 */
+(function(){
+ const F=s=>typeof s==='string'?s.replace(/蔥花/g,'蔥').replace(/沙拉油/g,'油'):s;
+ if(INGIMG['diamonds-3|蔥花'])INGIMG['diamonds-3|蔥']=INGIMG['diamonds-3|蔥花'];
+ if(INGIMG['diamonds-6|沙拉油'])INGIMG['diamonds-6|油']=INGIMG['diamonds-6|沙拉油'];
+ Object.keys(FOODS).forEach(k=>FOODS[k].items.forEach(it=>{it.ing=F(it.ing);it.how=F(it.how);}));
+ Object.keys(KIDING).forEach(k=>{KIDING[k]=F(KIDING[k]);});
+ GAMES.forEach(g=>{[g].concat(g.sub||[]).forEach(x=>(x.sections||[]).forEach(s=>{if(s.text)s.text=F(s.text);if(s.items)s.items=s.items.map(F);}));});
+})();
+
+go('home');
+</script>
+</body>
+</html>
